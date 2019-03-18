@@ -8,7 +8,7 @@ Design and implementation of a functional scripting language.
 program ::= {stat};
 stat    ::= define | funcall;
 define  ::= id "=" expr;
-expr    ::= func | funcall | id | number;
+expr    ::= func | funcall | define | id | number;
 func    ::= "(" [id {"," id}] ")" ":" expr;
 funcall ::= id "(" [expr {"," expr}] ")";
 id      ::= re"~([0-9]|=|\(|\)|,|:)(=|\(|\)|,|:)*";

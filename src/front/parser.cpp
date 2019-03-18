@@ -28,9 +28,12 @@ ASTPtr Parser::ParseExpr() {
             case Token::Id: {
                 auto id = lexer_.id_val();
                 NextToken();
-                // check if is function call
+                // check if is function call or define
                 if (IsTokenChar('(')) {
                     return ParseFunCall();
+                }
+                else if (IsTokenChar('=')) {
+                    return ParseDefine();
                 }
                 else {
                     return std::make_unique<IdAST>(id);
