@@ -1,0 +1,8 @@
+fib-impl = (self, n):
+    ?(le(n, 2),
+        (): 1,
+        (): +(self(self, -(n, 1)), self(self, -(n, 2))))
+
+fib = (n): fib-impl(fib-impl, n)
+
+<<<(fib(>>>()))
