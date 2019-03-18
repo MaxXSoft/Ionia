@@ -1,6 +1,6 @@
-# Some Note
+# Ionia
 
-Some note for creating Ion Lang.
+Design and implementation of a functional scripting language.
 
 ## EBNF of Ion Lang
 
@@ -14,3 +14,7 @@ funcall ::= id "(" [expr {"," expr}] ")";
 id      ::= re"~([0-9]|=|\(|\)|,|:)(=|\(|\)|,|:)*";
 number  ::= re"0|([1-9][0-9]*)";
 ```
+
+## Copyright and License
+
+Copyright (C) 2010-2019 MaxXing. License GPLv3.
