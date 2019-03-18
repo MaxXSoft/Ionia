@@ -1,5 +1,4 @@
 make-cont = (f): (x, y, cont): cont(f(x, y))
-call/cc = (f, cont): f((x, cont): cont(x), cont)
 
 +' = make-cont(+)
 -' = make-cont(-)
