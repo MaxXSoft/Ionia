@@ -5,8 +5,8 @@ Design and implementation of a functional scripting language.
 ## EBNF of Ion Lang
 
 ```ebnf
-program ::= {stat ";"};
-stat	::=	define | funcall;
+program ::= {stat};
+stat    ::= define | funcall;
 define  ::= id "=" expr;
 expr    ::= func | funcall | id | number;
 func    ::= "(" [id {"," id}] ")" ":" expr;
