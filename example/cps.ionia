@@ -10,12 +10,11 @@ make-cont = (f): (x, y, cont): cont(f(x, y))
         (x): *'(x, 4,
             (x): /'(x, 2, <<<))))
 
-fib-cont-impl = (self, n, cont):
+fib-cont = (n, cont):
     ?(le(n, 2),
         (): cont(1),
-        (): self(self, -(n, 1),
-            (x): self(self, -(n, 2),
+        (): fib-cont(-(n, 1),
+            (x): fib-cont(-(n, 2),
                 (y): cont(+(x, y)))))
-fib-cont = (n, cont): fib-cont-impl(fib-cont-impl, n, cont)
 
 fib-cont(>>>(), <<<)
