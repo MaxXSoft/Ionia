@@ -1,6 +1,6 @@
 # basic definition of list
 nil = (): 0
-list = (x, y): (i): ?(eq(i, 0), (): x, (): y)
+cons = (x, y): (i): ?(eq(i, 0), (): x, (): y)
 car = (l): l(0)
 cdr = (l): l(1)
 
@@ -12,11 +12,12 @@ at-impl = (self, l, i):
 at = (l, i): at-impl(at-impl, l, i)
 
 # stack operation
-push = (l, x): list(x, l)
+push = (l, x): cons(x, l)
+top = car
 pop = cdr
 
 # create list
-l = list(4, nil)
+l = cons(4, nil)
 l = push(l, 3)
 l = push(l, 2)
 l = push(l, 1)
@@ -29,7 +30,7 @@ l = push(l, 1)
 
 # some common functions
 map-impl = (self, l, f):
-    list(f(l(0)),
+    cons(f(l(0)),
         ?(is(l(1), nil),
             (): nil,
             (): self(self, l(1), f)))
