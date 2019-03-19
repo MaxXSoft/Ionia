@@ -1,22 +1,16 @@
 # yin/yang puzzle in CPS
 
-invoke2 = (f, v1, v2): f(v1, v2)
-con = (x, y, cont): cont(y)
-yin = (cont):
-    invoke2((c, cont2): cont2(c),
-        (v2, cont1):
-            invoke2((cc, cont0): con(<<<(0), cc, cont0), v2, cont),
-        (v2):
-            invoke2((cc, cont0): con(<<<(0), cc, cont0), v2, cont))
-yang = (cont):
-    invoke2((c, cont2): cont2(c),
-        (v2, cont1):
-            invoke2((cc, cont0): con(<<<(1), cc, cont0), v2, cont),
-        (v2):
-            invoke2((cc, cont0): con(<<<(1), cc, cont0), v2, cont))
-f = (cont):
-    yin((v1):
-        yang((v2):
-            v1(v2, cont)))
+{} = (s1, s2): s2
 
-f((x): x)
+yin = (cont1): {} (
+    <<<(0),
+    {} (
+        yang = (cont2): {} (
+            <<<(1),
+            cont1(cont2)
+        ),
+        yang(yang)
+    )
+)
+
+yin(yin)
