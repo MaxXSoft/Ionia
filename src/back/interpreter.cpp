@@ -95,14 +95,7 @@ ValPtr Interpreter::CallFunc(const ValPtr &func, const ValPtrList &args) {
 ValPtr Interpreter::IonPrint(const EnvPtr &env) {
     auto val = env->GetValue("v");
     if (!val) return PrintError("invalid argument");
-    if (val->is_func()) {
-        std::cout << "<function at: ";
-        std::cout << val->func_val().get();
-        std::cout << ">" << std::endl;
-    }
-    else {
-        std::cout << val->num_val() << std::endl;
-    }
+    PrintValue(val);
     return val;
 }
 
@@ -207,4 +200,15 @@ ValPtr Interpreter::EvalFunCall(const std::string &id,
 
 ValPtr Interpreter::HandlePseudoFunCall(ValCallback func) {
     return func(envs_.top());
+}
+
+void Interpreter::PrintValue(const ValPtr &value) {
+    if (value->is_func()) {
+        std::cout << "<function at: ";
+        std::cout << value->func_val().get();
+        std::cout << ">" << std::endl;
+    }
+    else {
+        std::cout << value->num_val() << std::endl;
+    }
 }

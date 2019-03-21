@@ -14,13 +14,14 @@ public:
     }
 
     ValPtr EvalNext();
-
     ValPtr EvalId(const std::string &id);
     ValPtr EvalNum(int num);
     ValPtr EvalDefine(const std::string &id, const ValPtr &expr);
     ValPtr EvalFunc(ASTPtr func);
     ValPtr EvalFunCall(const std::string &id, const ValPtrList &args);
     ValPtr HandlePseudoFunCall(ValCallback func);
+
+    void PrintValue(const ValPtr &value);
 
     unsigned int error_num() const { return error_num_; }
     const EnvPtr &root() const { return root_; }
