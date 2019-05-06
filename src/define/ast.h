@@ -1,5 +1,5 @@
-#ifndef IONIA_AST_H_
-#define IONIA_AST_H_
+#ifndef IONIA_DEFINE_AST_H_
+#define IONIA_DEFINE_AST_H_
 
 #include <utility>
 #include <string>
@@ -99,4 +99,4 @@ private:
     ASTPtrList args_;
 };
 
-#endif // IONIA_AST_H_
+#endif // IONIA_DEFINE_AST_H_

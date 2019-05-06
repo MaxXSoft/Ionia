@@ -2,7 +2,7 @@
 
 #include "front/lexer.h"
 #include "front/parser.h"
-#include "back/interpreter.h"
+#include "back/interpreter/interpreter.h"
 
 using namespace std;
 

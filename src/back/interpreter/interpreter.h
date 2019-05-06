@@ -1,5 +1,5 @@
-#ifndef IONIA_INTERPRETER_H_
-#define IONIA_INTERPRETER_H_
+#ifndef IONIA_BACK_INTERPRETER_INTERPRETER_H_
+#define IONIA_BACK_INTERPRETER_INTERPRETER_H_
 
 #include <string>
 #include <stack>
@@ -51,4 +51,4 @@ private:
     std::stack<EnvPtr> envs_;
 };
 
-#endif // IONIA_INTERPRETER_H_
+#endif // IONIA_BACK_INTERPRETER_INTERPRETER_H_

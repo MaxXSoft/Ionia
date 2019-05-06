@@ -1,5 +1,5 @@
-#ifndef IONIA_SYMBOL_H_
-#define IONIA_SYMBOL_H_
+#ifndef IONIA_DEFINE_SYMBOL_H_
+#define IONIA_DEFINE_SYMBOL_H_
 
 #include <memory>
 #include <map>
@@ -52,4 +52,4 @@ private:
     std::map<std::string, ValPtr> symbols_;
 };
 
-#endif // IONIA_SYMBOL_H_
+#endif // IONIA_DEFINE_SYMBOL_H_

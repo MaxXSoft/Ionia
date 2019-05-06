@@ -1,5 +1,5 @@
-#ifndef IONIA_PARSER_H_
-#define IONIA_PARSER_H_
+#ifndef IONIA_FRONT_PARSER_H_
+#define IONIA_FRONT_PARSER_H_
 
 #include "front/lexer.h"
 #include "define/ast.h"
@@ -33,4 +33,4 @@ private:
     unsigned int error_num_;
 };
 
-#endif // IONIA_PARSER_H_
+#endif // IONIA_FRONT_PARSER_H_

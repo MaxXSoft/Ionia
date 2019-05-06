@@ -1,5 +1,5 @@
 #include "define/ast.h"
-#include "back/interpreter.h"
+#include "back/interpreter/interpreter.h"
 
 #include <iostream>
 

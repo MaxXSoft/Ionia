@@ -1,5 +1,5 @@
-#ifndef IONIA_LEXER_H_
-#define IONIA_LEXER_H_
+#ifndef IONIA_FRONT_LEXER_H_
+#define IONIA_FRONT_LEXER_H_
 
 #include <istream>
 #include <string>
@@ -42,4 +42,4 @@ private:
     char char_val_;
 };
 
-#endif // IONIA_LEXER_H_
+#endif // IONIA_FRONT_LEXER_H_
