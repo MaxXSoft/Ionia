@@ -4,16 +4,16 @@
 #include <string>
 #include <stack>
 
-#include "front/parser.h"
+#include "define/ast.h"
 #include "define/symbol.h"
 
 class Interpreter {
  public:
-  Interpreter(Parser &parser) : parser_(parser), error_num_(0) {
+  Interpreter() : error_num_(0) {
     InitEnvironment();
   }
 
-  ValPtr EvalNext();
+  ValPtr EvalNext(const ASTPtr &ast);
   ValPtr EvalId(const std::string &id);
   ValPtr EvalNum(int num);
   ValPtr EvalDefine(const std::string &id, const ValPtr &expr);
@@ -45,7 +45,6 @@ class Interpreter {
   ValPtr IonIs(const EnvPtr &env);
   ValPtr IonCalcOp(const EnvPtr &env, Operator op);
 
-  Parser &parser_;
   unsigned int error_num_;
   EnvPtr root_;
   std::stack<EnvPtr> envs_;

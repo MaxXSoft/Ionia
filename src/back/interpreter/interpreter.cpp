@@ -3,6 +3,7 @@
 #include <iostream>
 #include <utility>
 #include <functional>
+#include <cassert>
 
 #include "define/ast.h"
 
@@ -162,9 +163,8 @@ ValPtr Interpreter::IonCalcOp(const EnvPtr &env, Operator op) {
   }
 }
 
-ValPtr Interpreter::EvalNext() {
-  auto ast = parser_.ParseNext();
-  if (!ast) return nullptr;
+ValPtr Interpreter::EvalNext(const ASTPtr &ast) {
+  assert(ast);
   return ast->Eval(*this);
 }
 

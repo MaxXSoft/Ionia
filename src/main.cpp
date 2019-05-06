@@ -13,9 +13,11 @@ int main(int argc, const char *argv[]) {
   // create lexer, parser and interpreter
   Lexer lexer(ifs);
   Parser parser(lexer);
-  Interpreter interpreter(parser);
+  Interpreter interpreter;
   // parse and eval
-  while (auto val = interpreter.EvalNext());
+  while (auto ast = parser.ParseNext()) {
+    if (!interpreter.EvalNext(ast)) break;
+  }
   // get error count
   auto err =
       lexer.error_num() + parser.error_num() + interpreter.error_num();
