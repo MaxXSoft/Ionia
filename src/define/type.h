@@ -11,4 +11,4 @@ using ASTPtr = std::unique_ptr<BaseAST>;
 using ASTPtrList = std::vector<ASTPtr>;
 using IdList = std::vector<std::string>;
 
-#endif // IONIA_DEFINE_TYPE_H_
+#endif  // IONIA_DEFINE_TYPE_H_

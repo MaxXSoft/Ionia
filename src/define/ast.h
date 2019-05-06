@@ -11,92 +11,92 @@
 class Interpreter;
 
 class BaseAST {
-public:
-    virtual ~BaseAST() = default;
+ public:
+  virtual ~BaseAST() = default;
 
-    virtual ASTPtr Clone() = 0;
-    virtual ValPtr Eval(Interpreter &intp) = 0;
+  virtual ASTPtr Clone() = 0;
+  virtual ValPtr Eval(Interpreter &intp) = 0;
 };
 
 class IdAST : public BaseAST {
-public:
-    IdAST(const std::string &id) : id_(id) {}
+ public:
+  IdAST(const std::string &id) : id_(id) {}
 
-    ASTPtr Clone() override;
-    ValPtr Eval(Interpreter &intp) override;
+  ASTPtr Clone() override;
+  ValPtr Eval(Interpreter &intp) override;
 
-private:
-    std::string id_;
+ private:
+  std::string id_;
 };
 
 class NumAST : public BaseAST {
-public:
-    NumAST(int num) : num_(num) {}
+ public:
+  NumAST(int num) : num_(num) {}
 
-    ASTPtr Clone() override;
-    ValPtr Eval(Interpreter &intp) override;
+  ASTPtr Clone() override;
+  ValPtr Eval(Interpreter &intp) override;
 
-private:
-    int num_;
+ private:
+  int num_;
 };
 
 class DefineAST : public BaseAST {
-public:
-    DefineAST(const std::string &id, ASTPtr expr)
-            : id_(id), expr_(std::move(expr)) {}
+ public:
+  DefineAST(const std::string &id, ASTPtr expr)
+      : id_(id), expr_(std::move(expr)) {}
 
-    ASTPtr Clone() override;
-    ValPtr Eval(Interpreter &intp) override;
+  ASTPtr Clone() override;
+  ValPtr Eval(Interpreter &intp) override;
 
-private:
-    std::string id_;
-    ASTPtr expr_;
+ private:
+  std::string id_;
+  ASTPtr expr_;
 };
 
 class FuncAST : public BaseAST {
-public:
-    FuncAST(IdList args, ASTPtr expr)
-            : args_(std::move(args)), expr_(std::move(expr)) {}
+ public:
+  FuncAST(IdList args, ASTPtr expr)
+      : args_(std::move(args)), expr_(std::move(expr)) {}
 
-    ASTPtr Clone() override;
-    ValPtr Eval(Interpreter &intp) override;
+  ASTPtr Clone() override;
+  ValPtr Eval(Interpreter &intp) override;
 
-    virtual ValPtr Call(Interpreter &intp);
+  virtual ValPtr Call(Interpreter &intp);
 
-    const IdList &args() const { return args_; }
+  const IdList &args() const { return args_; }
 
-protected:
-    FuncAST(IdList args) : args_(std::move(args)) {}
-    
-private:
-    IdList args_;
-    ASTPtr expr_;
+ protected:
+  FuncAST(IdList args) : args_(std::move(args)) {}
+
+ private:
+  IdList args_;
+  ASTPtr expr_;
 };
 
 class PseudoFuncAST : public FuncAST {
-public:
-    PseudoFuncAST(IdList args, ValCallback func)
-            : FuncAST(std::move(args)), func_(func) {}
+ public:
+  PseudoFuncAST(IdList args, ValCallback func)
+      : FuncAST(std::move(args)), func_(func) {}
 
-    ASTPtr Clone() override;
-    ValPtr Call(Interpreter &intp) override;
+  ASTPtr Clone() override;
+  ValPtr Call(Interpreter &intp) override;
 
-private:
-    IdList args_;
-    ValCallback func_;
+ private:
+  IdList args_;
+  ValCallback func_;
 };
 
 class FunCallAST : public BaseAST {
-public:
-    FunCallAST(const std::string &id, ASTPtrList args)
-            : id_(id), args_(std::move(args)) {}
+ public:
+  FunCallAST(const std::string &id, ASTPtrList args)
+      : id_(id), args_(std::move(args)) {}
 
-    ASTPtr Clone() override;
-    ValPtr Eval(Interpreter &intp) override;
+  ASTPtr Clone() override;
+  ValPtr Eval(Interpreter &intp) override;
 
-private:
-    std::string id_;
-    ASTPtrList args_;
+ private:
+  std::string id_;
+  ASTPtrList args_;
 };
 
-#endif // IONIA_DEFINE_AST_H_
+#endif  // IONIA_DEFINE_AST_H_

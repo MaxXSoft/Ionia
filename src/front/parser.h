@@ -5,32 +5,30 @@
 #include "define/ast.h"
 
 class Parser {
-public:
-    Parser(Lexer &lexer) : lexer_(lexer), error_num_(0) {
-        NextToken();
-    }
+ public:
+  Parser(Lexer &lexer) : lexer_(lexer), error_num_(0) { NextToken(); }
 
-    ASTPtr ParseNext();
+  ASTPtr ParseNext();
 
-    unsigned int error_num() const { return error_num_; }
+  unsigned int error_num() const { return error_num_; }
 
-private:
-    using Token = Lexer::Token;
+ private:
+  using Token = Lexer::Token;
 
-    Token NextToken() { return cur_token_ = lexer_.NextToken(); }
-    bool IsTokenChar(char c) const {
-        return cur_token_ == Token::Char && lexer_.char_val() == c;
-    }
-    
-    ASTPtr PrintError(const char *message);
-    ASTPtr ParseDefine();
-    ASTPtr ParseExpr();
-    ASTPtr ParseFunc();
-    ASTPtr ParseFunCall();
+  Token NextToken() { return cur_token_ = lexer_.NextToken(); }
+  bool IsTokenChar(char c) const {
+    return cur_token_ == Token::Char && lexer_.char_val() == c;
+  }
 
-    Lexer &lexer_;
-    Token cur_token_;
-    unsigned int error_num_;
+  ASTPtr PrintError(const char *message);
+  ASTPtr ParseDefine();
+  ASTPtr ParseExpr();
+  ASTPtr ParseFunc();
+  ASTPtr ParseFunCall();
+
+  Lexer &lexer_;
+  Token cur_token_;
+  unsigned int error_num_;
 };
 
-#endif // IONIA_FRONT_PARSER_H_
+#endif  // IONIA_FRONT_PARSER_H_
