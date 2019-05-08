@@ -52,7 +52,7 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
       i += 4;
     }
     // insert to table
-    global_funcs.insert({*func_id, glob_func});
+    global_funcs.insert({sym_table[*func_id], glob_func});
     // reset
     glob_func.args.clear();
   }

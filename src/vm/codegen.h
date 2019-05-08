@@ -20,10 +20,6 @@ class VMCodeGen {
   std::vector<std::uint8_t> GenerateBytecode();
   void GenerateBytecodeFile(const std::string &file);
 
-  // getters
-  const VMSymbolTable &sym_table() const { return sym_table_; }
-  const VMGlobalFuncTable &global_funcs() const { return global_funcs_; }
-
  private:
   // file header of Ionia VM's bytecode file (bad bite c -> bad byte code)
   static const std::uint32_t kFileHeader = 0xbadb17ec;
@@ -32,7 +28,6 @@ class VMCodeGen {
 
   // tables
   VMSymbolTable sym_table_;
-  VMGlobalFuncTable global_funcs_;
 };
 
 #endif  // IONIA_VM_BYTECODE_H_
