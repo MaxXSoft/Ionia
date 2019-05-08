@@ -19,17 +19,26 @@ class VM {
   bool LoadProgram(const std::string &file);
   bool LoadProgram(const std::vector<std::uint8_t> &buffer);
 
+  // register an external function
+  bool RegisterFunction(const std::string &name, ExtFunc func);
   // register an external function, returns function id
-  std::uint32_t RegisterFunction(const std::string &name, ExtFunc func);
+  bool RegisterFunction(const std::string &name, ExtFunc func,
+                        std::uint32_t &id);
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
                     const std::vector<VMValue> &args, VMValue &ret);
+  // tail call a global function in vitrual machine
+  bool TailCallFunction(const std::string &name,
+                        const std::vector<VMValue> &args, VMValue &ret);
 
   // run current program
   bool Run();
 
  private:
   void Reset();
+  // Get value from current environment.
+  // Returns symbol name if not found, otherwise returns nullptr.
+  inline const char *GetEnvValue(VMInst *inst, VMValue &value);
 
   std::vector<std::uint8_t> rom_;
   // internal status
@@ -39,7 +48,7 @@ class VM {
   // tables
   VMSymbolTable sym_table_;
   VMGlobalFuncTable global_funcs_;
-  std::unordered_map<std::uint32_t, ExtFunc> ext_funcs_;
+  std::unordered_map<std::string, ExtFunc> ext_funcs_;
 };
 
 #endif  // IONIA_VM_VM_H_
