@@ -27,9 +27,6 @@ class VM {
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
                     const std::vector<VMValue> &args, VMValue &ret);
-  // tail call a global function in vitrual machine
-  bool TailCallFunction(const std::string &name,
-                        const std::vector<VMValue> &args, VMValue &ret);
 
   // reset VM
   void Reset();

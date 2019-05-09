@@ -115,38 +115,6 @@ bool VM::CallFunction(const std::string &name,
   return result;
 }
 
-bool VM::TailCallFunction(const std::string &name,
-                          const std::vector<VMValue> &args, VMValue &ret) {
-  // find function name in global function table
-  auto it = global_funcs_.find("$" + name);
-  if (it == global_funcs_.end()) return false;
-  const auto &func = it->second;
-  // check argument size
-  if (args.size() != func.args.size()) return false;
-  // create new environment and set up return PC
-  auto env = MakeVMEnv(root_);
-  env->ret_pc = envs_.top()->ret_pc;
-  // backup environment stack and reset
-  // since VM will automatically stop when executing RET instruction
-  // and there is only one environment in environment stack
-  envs_.pop();
-  auto last_envs = envs_;
-  while (!envs_.empty()) envs_.pop();
-  // set up arguments
-  for (int i = 0; i < args.size(); ++i) {
-    auto sym_ptr = sym_table_[func.args[i]].c_str();
-    env->slot.insert({sym_ptr, args[i]});
-  }
-  // tail call function
-  envs_.push(env);
-  pc_ = func.func_pc;
-  auto result = Run();
-  if (result) ret = val_reg_;
-  // restore stack
-  envs_ = last_envs;
-  return result;
-}
-
 void VM::Reset() {
   pc_ = 0;
   val_reg_ = {0, nullptr};
