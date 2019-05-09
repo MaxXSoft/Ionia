@@ -22,14 +22,6 @@ bool PrintError(const char *message, const char *symbol) {
 
 }  // namespace
 
-void VM::Reset() {
-  pc_ = 0;
-  val_reg_ = {0, nullptr};
-  while (!envs_.empty()) envs_.pop();
-  // create root environment
-  envs_.push(MakeVMEnv());
-}
-
 const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
   auto str = inst->opr ? sym_table_[inst->opr - 1].c_str() : nullptr;
   auto cur_env = envs_.top();
@@ -96,12 +88,72 @@ bool VM::RegisterFunction(const std::string &name, ExtFunc func,
 
 bool VM::CallFunction(const std::string &name,
                       const std::vector<VMValue> &args, VMValue &ret) {
-  // TODO
+  // find function name in global function table
+  auto it = global_funcs_.find("$" + name);
+  if (it == global_funcs_.end()) return false;
+  const auto &func = it->second;
+  // set up new environment
+  auto env = MakeVMEnv(root_);
+  // set up arguments
+  if (args.size() != func.args.size()) return false;
+  for (int i = 0; i < args.size(); ++i) {
+    auto sym_ptr = sym_table_[func.args[i]].c_str();
+    env->slot.insert({sym_ptr, args[i]});
+  }
+  // backup environment stack and reset
+  // since VM will automatically stop when executing RET instruction
+  // and there is only one environment in environment stack
+  auto last_envs = envs_;
+  while (!envs_.empty()) envs_.pop();
+  // call function
+  envs_.push(env);
+  pc_ = func.func_pc;
+  auto result = Run();
+  if (result) ret = val_reg_;
+  // restore stack
+  envs_ = last_envs;
+  return result;
 }
 
 bool VM::TailCallFunction(const std::string &name,
                           const std::vector<VMValue> &args, VMValue &ret) {
-  // TODO
+  // find function name in global function table
+  auto it = global_funcs_.find("$" + name);
+  if (it == global_funcs_.end()) return false;
+  const auto &func = it->second;
+  // check argument size
+  if (args.size() != func.args.size()) return false;
+  // create new environment and set up return PC
+  auto env = MakeVMEnv(root_);
+  env->ret_pc = envs_.top()->ret_pc;
+  // backup environment stack and reset
+  // since VM will automatically stop when executing RET instruction
+  // and there is only one environment in environment stack
+  envs_.pop();
+  auto last_envs = envs_;
+  while (!envs_.empty()) envs_.pop();
+  // set up arguments
+  for (int i = 0; i < args.size(); ++i) {
+    auto sym_ptr = sym_table_[func.args[i]].c_str();
+    env->slot.insert({sym_ptr, args[i]});
+  }
+  // tail call function
+  envs_.push(env);
+  pc_ = func.func_pc;
+  auto result = Run();
+  if (result) ret = val_reg_;
+  // restore stack
+  envs_ = last_envs;
+  return result;
+}
+
+void VM::Reset() {
+  pc_ = 0;
+  val_reg_ = {0, nullptr};
+  while (!envs_.empty()) envs_.pop();
+  // create root environment
+  root_ = MakeVMEnv();
+  envs_.push(root_);
 }
 
 bool VM::Run() {
@@ -113,9 +165,7 @@ bool VM::Run() {
   } while (0)
 
   VMInst *inst;
-  const void *inst_labels[] = {
-    VM_INST_ALL(VM_EXPAND_LABEL_LIST)
-  };
+  const void *inst_labels[] = { VM_INST_ALL(VM_EXPAND_LABEL_LIST) };
   // fetch first instruction
   VM_NEXT(0);
 
@@ -151,7 +201,7 @@ bool VM::Run() {
 
   // return from function
   VM_LABEL(RET) {
-    if (envs_.top()->outer) {
+    if (envs_.size() > 1) {
       pc_ = envs_.top()->ret_pc;
       envs_.pop();
     }

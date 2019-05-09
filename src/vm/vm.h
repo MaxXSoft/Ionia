@@ -31,11 +31,12 @@ class VM {
   bool TailCallFunction(const std::string &name,
                         const std::vector<VMValue> &args, VMValue &ret);
 
+  // reset VM
+  void Reset();
   // run current program
   bool Run();
 
  private:
-  void Reset();
   // Get value from current environment.
   // Returns symbol name if not found, otherwise returns nullptr.
   inline const char *GetEnvValue(VMInst *inst, VMValue &value);
@@ -45,6 +46,7 @@ class VM {
   std::uint32_t pc_;
   VMValue val_reg_;
   std::stack<VMEnvPtr> envs_;
+  VMEnvPtr root_;
   // tables
   VMSymbolTable sym_table_;
   VMGlobalFuncTable global_funcs_;
