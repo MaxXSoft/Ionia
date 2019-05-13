@@ -267,10 +267,10 @@ bool VM::Run() {
     VM_NEXT(1);
   }
 
-  // if value is true then branch
+  // if value is true then jump
   VM_LABEL(IF) {
     if (val_reg_.value) {
-      pc_ += static_cast<std::int32_t>(inst->opr);
+      pc_ = inst->opr;
       VM_NEXT(0);
     }
     else {
