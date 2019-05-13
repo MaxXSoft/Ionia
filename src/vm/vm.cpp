@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <cassert>
 
 #include "vm/codegen.h"
 #include "util/cast.h"
@@ -23,11 +24,10 @@ bool PrintError(const char *message, const char *symbol) {
 }  // namespace
 
 const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
-  auto str = inst->opr ? sym_table_[inst->opr - 1].c_str() : nullptr;
   auto cur_env = envs_.top();
   // recursively find value in environments
   while (cur_env) {
-    auto it = cur_env->slot.find(str);
+    auto it = cur_env->slot.find(inst->opr);
     if (it != cur_env->slot.end()) {
       value = it->second;
       return nullptr;
@@ -36,6 +36,9 @@ const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
       cur_env = cur_env->outer;
     }
   }
+  // value not found
+  assert(inst->opr != 0);
+  auto str = sym_table_[inst->opr - 1].c_str();
   return str;
 }
 
@@ -97,8 +100,7 @@ bool VM::CallFunction(const std::string &name,
   // set up arguments
   if (args.size() != func.args.size()) return false;
   for (int i = 0; i < args.size(); ++i) {
-    auto sym_ptr = sym_table_[func.args[i]].c_str();
-    env->slot.insert({sym_ptr, args[i]});
+    env->slot.insert({func.args[i], args[i]});
   }
   // backup environment stack and reset
   // since VM will automatically stop when executing RET instruction
@@ -149,8 +151,7 @@ bool VM::Run() {
 
   // set value of identifier in current environment
   VM_LABEL(SET) {
-    auto str = inst->opr ? sym_table_[inst->opr - 1].c_str() : nullptr;
-    envs_.top()->slot[str] = val_reg_;
+    envs_.top()->slot[inst->opr] = val_reg_;
     VM_NEXT(4);
   }
 

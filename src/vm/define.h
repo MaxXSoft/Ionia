@@ -44,7 +44,7 @@ struct VMValue {
 };
 
 struct VMEnv {
-  std::unordered_map<const char *, VMValue> slot;
+  std::unordered_map<std::uint32_t, VMValue> slot;
   VMEnvPtr outer;
   std::uint32_t ret_pc;
 };
@@ -61,14 +61,16 @@ using VMGlobalFuncTable = std::unordered_map<std::string, VMGlobalFunc>;
 // make new VM environment
 inline VMEnvPtr MakeVMEnv() {
   auto env = std::make_shared<VMEnv>(VMEnv({{}, nullptr, 0}));
-  env->slot.insert({nullptr, {0, nullptr}});
+  // insert temp register into slot
+  env->slot.insert({0, {0, nullptr}});
   return env;
 }
 
 // make new VM environment with specific outer environment
 inline VMEnvPtr MakeVMEnv(const VMEnvPtr &outer) {
   auto env = std::make_shared<VMEnv>(VMEnv({{}, outer, 0}));
-  env->slot.insert({nullptr, {0, nullptr}});
+  // insert temp register into slot
+  env->slot.insert({0, {0, nullptr}});
   return env;
 }
 
