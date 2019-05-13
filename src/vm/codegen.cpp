@@ -13,6 +13,10 @@ using InstOp = VMInst::OpCode;
 
 }  // namespace
 
+// definitions of static member variables
+const std::uint32_t VMCodeGen::kFileHeader;
+const std::uint32_t VMCodeGen::kMinFileSize;
+
 void VMCodeLabel::FillLabel() {
   if (!gen_) return;
   // get unfilled instructions

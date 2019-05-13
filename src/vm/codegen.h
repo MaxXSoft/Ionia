@@ -34,7 +34,7 @@ public:
     return label;
   }
 
-  inline void SetLabel();
+  void SetLabel();
 
 private:
   friend class VMCodeGen;
@@ -42,7 +42,7 @@ private:
   VMCodeLabel(VMCodeGen *gen, std::uint32_t offset)
       : gen_(gen), offset_(offset) {}
 
-  inline void FillLabel();
+  void FillLabel();
 
   VMCodeGen *gen_;
   std::uint32_t offset_;
@@ -65,44 +65,44 @@ class VMCodeGen {
   void GenerateBytecodeFile(const std::string &file);
 
   // generate instructions
-  inline void GET(const std::string &name);
-  inline void SET(const std::string &name);
-  inline void FUN();
-  inline void CNST(std::uint32_t num);
-  inline void RET();
-  inline void CENV();
-  inline void CALL(const std::string &name);
-  inline void TCAL(const std::string &name);
-  inline void WRIT();
-  inline void READ();
-  inline void IF(const std::string &label);
-  inline void IF(const VMCodeLabel &label);
-  inline void IS(const std::string &name);
-  inline void EQL(const std::string &name);
-  inline void NEQ(const std::string &name);
-  inline void LT(const std::string &name);
-  inline void LEQ(const std::string &name);
-  inline void GT(const std::string &name);
-  inline void GEQ(const std::string &name);
-  inline void ADD(const std::string &name);
-  inline void SUB(const std::string &name);
-  inline void MUL(const std::string &name);
-  inline void DIV(const std::string &name);
-  inline void MOD(const std::string &name);
-  inline void AND(const std::string &name);
-  inline void OR(const std::string &name);
-  inline void NOT(const std::string &name);
-  inline void XOR(const std::string &name);
-  inline void SHL(const std::string &name);
-  inline void SHR(const std::string &name);
-  inline void LAND(const std::string &name);
-  inline void LOR(const std::string &name);
-  inline void LNOT(const std::string &name);
+  void GET(const std::string &name);
+  void SET(const std::string &name);
+  void FUN();
+  void CNST(std::uint32_t num);
+  void RET();
+  void CENV();
+  void CALL(const std::string &name);
+  void TCAL(const std::string &name);
+  void WRIT();
+  void READ();
+  void IF(const std::string &label);
+  void IF(const VMCodeLabel &label);
+  void IS(const std::string &name);
+  void EQL(const std::string &name);
+  void NEQ(const std::string &name);
+  void LT(const std::string &name);
+  void LEQ(const std::string &name);
+  void GT(const std::string &name);
+  void GEQ(const std::string &name);
+  void ADD(const std::string &name);
+  void SUB(const std::string &name);
+  void MUL(const std::string &name);
+  void DIV(const std::string &name);
+  void MOD(const std::string &name);
+  void AND(const std::string &name);
+  void OR(const std::string &name);
+  void NOT(const std::string &name);
+  void XOR(const std::string &name);
+  void SHL(const std::string &name);
+  void SHR(const std::string &name);
+  void LAND(const std::string &name);
+  void LOR(const std::string &name);
+  void LNOT(const std::string &name);
 
   // create a new named label
-  inline void LABEL(const std::string &label);
+  void LABEL(const std::string &label);
   // create a new anonymous label
-  inline VMCodeLabel NewLabel();
+  VMCodeLabel NewLabel();
 
   // register new global function
   void RegisterGlobalFunction(const std::string &name,
@@ -122,8 +122,8 @@ class VMCodeGen {
   using InstList = std::forward_list<VMInst *>;
 
   std::uint32_t GetSymbolIndex(const std::string &name);
-  inline void PushInst(const VMInst &inst);
-  inline void PushInst(VMInst::OpCode op);
+  void PushInst(const VMInst &inst);
+  void PushInst(VMInst::OpCode op);
   void FillNamedLabels();
 
   // tables

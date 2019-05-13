@@ -36,7 +36,7 @@ class VM {
  private:
   // Get value from current environment.
   // Returns symbol name if not found, otherwise returns nullptr.
-  inline const char *GetEnvValue(VMInst *inst, VMValue &value);
+  const char *GetEnvValue(VMInst *inst, VMValue &value);
 
   std::vector<std::uint8_t> rom_;
   // internal status

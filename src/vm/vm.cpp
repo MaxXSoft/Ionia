@@ -10,6 +10,9 @@
 
 namespace {
 
+// type of slot in VM environment
+using SlotType = decltype(VMEnv::slot);
+
 bool PrintError(const char *message) {
   std::cerr << "[ERROR] " << message << std::endl;
   return false;
@@ -135,6 +138,8 @@ bool VM::Run() {
   } while (0)
 
   VMInst *inst;
+  VMValue opr;
+  SlotType slot;
   const void *inst_labels[] = { VM_INST_ALL(VM_EXPAND_LABEL_LIST) };
   // fetch first instruction
   VM_NEXT(0);
@@ -190,8 +195,7 @@ bool VM::Run() {
   // call function and modify outer environment
   VM_LABEL(CALL) {
     // get function object
-    VMValue func;
-    if (auto str = GetEnvValue(inst, func)) {
+    if (auto str = GetEnvValue(inst, opr)) {
       auto it = ext_funcs_.find(str);
       if (it != ext_funcs_.end()) {
         // calling an external function
@@ -206,23 +210,22 @@ bool VM::Run() {
       }
     }
     // check if is not a function
-    if (!func.env) return PrintError("calling a non-function");
+    if (!opr.env) return PrintError("calling a non-function");
     // set up environment
-    envs_.top()->outer = func.env;
+    envs_.top()->outer = opr.env;
     envs_.top()->ret_pc = pc_ + 4;
-    pc_ = func.value;
+    pc_ = opr.value;
     VM_NEXT(0);
   }
 
   // tail call function and modify outer environment
   VM_LABEL(TCAL) {
     // get function object
-    VMValue func;
-    if (auto str = GetEnvValue(inst, func)) {
+    if (auto str = GetEnvValue(inst, opr)) {
       auto it = ext_funcs_.find(str);
       if (it != ext_funcs_.end()) {
         // calling an external function
-        auto slot = envs_.top()->slot;
+        slot = envs_.top()->slot;
         envs_.pop();
         envs_.top()->outer = nullptr;
         envs_.top()->slot = slot;
@@ -238,13 +241,13 @@ bool VM::Run() {
       }
     }
     // check if is not a function
-    if (!func.env) return PrintError("calling a non-function");
+    if (!opr.env) return PrintError("calling a non-function");
     // set up environment
-    auto slot = envs_.top()->slot;
+    slot = envs_.top()->slot;
     envs_.pop();
-    envs_.top()->outer = func.env;
+    envs_.top()->outer = opr.env;
     envs_.top()->slot = slot;
-    pc_ = func.value;
+    pc_ = opr.value;
     VM_NEXT(0);
   }
 
@@ -280,7 +283,6 @@ bool VM::Run() {
 
   VM_LABEL(IS) {
     // read operand from environment
-    VMValue opr;
     if (auto str = GetEnvValue(inst, opr)) {
       return PrintError("not found", str);
     }
@@ -297,7 +299,6 @@ bool VM::Run() {
 
   VM_LABEL(EQL) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -308,7 +309,6 @@ bool VM::Run() {
 
   VM_LABEL(NEQ) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -319,7 +319,6 @@ bool VM::Run() {
 
   VM_LABEL(LT) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -330,7 +329,6 @@ bool VM::Run() {
 
   VM_LABEL(LEQ) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -341,7 +339,6 @@ bool VM::Run() {
 
   VM_LABEL(GT) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -352,7 +349,6 @@ bool VM::Run() {
 
   VM_LABEL(GEQ) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -363,7 +359,6 @@ bool VM::Run() {
 
   VM_LABEL(ADD) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -374,7 +369,6 @@ bool VM::Run() {
 
   VM_LABEL(SUB) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -385,7 +379,6 @@ bool VM::Run() {
 
   VM_LABEL(MUL) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -396,7 +389,6 @@ bool VM::Run() {
 
   VM_LABEL(DIV) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -407,7 +399,6 @@ bool VM::Run() {
 
   VM_LABEL(MOD) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -418,7 +409,6 @@ bool VM::Run() {
 
   VM_LABEL(AND) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -429,7 +419,6 @@ bool VM::Run() {
 
   VM_LABEL(OR) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -440,7 +429,6 @@ bool VM::Run() {
 
   VM_LABEL(NOT) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -451,7 +439,6 @@ bool VM::Run() {
 
   VM_LABEL(XOR) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -462,7 +449,6 @@ bool VM::Run() {
 
   VM_LABEL(SHL) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -473,7 +459,6 @@ bool VM::Run() {
 
   VM_LABEL(SHR) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -484,7 +469,6 @@ bool VM::Run() {
 
   VM_LABEL(LAND) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -495,7 +479,6 @@ bool VM::Run() {
 
   VM_LABEL(LOR) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
@@ -506,7 +489,6 @@ bool VM::Run() {
 
   VM_LABEL(LNOT) {
     // get operand
-    VMValue opr;
     if (val_reg_.env || GetEnvValue(inst, opr) || opr.env) {
       return PrintError("invalid argument");
     }
