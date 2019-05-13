@@ -104,6 +104,13 @@ class VMCodeGen {
   // create a new anonymous label
   inline VMCodeLabel NewLabel();
 
+  // register new global function
+  void RegisterGlobalFunction(const std::string &name,
+                              const std::vector<std::string> &args);
+
+  // get current pc
+  std::uint32_t pc() const { return inst_buf_.size(); }
+
  private:
   // file header of Ionia VM's bytecode file (bad bite c -> bad byte code)
   static const std::uint32_t kFileHeader = 0xbadb17ec;
@@ -119,8 +126,9 @@ class VMCodeGen {
   inline void PushInst(VMInst::OpCode op);
   void FillNamedLabels();
 
-  // symbol table
+  // tables
   VMSymbolTable sym_table_;
+  std::map<std::uint32_t, VMGlobalFunc> global_funcs_;
   // buffer that stores instructions
   std::vector<std::uint8_t> inst_buf_;
   // map of named labels
