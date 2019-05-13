@@ -7,8 +7,9 @@
 #include "define/type.h"
 #include "define/symbol.h"
 
-// forward declaraction of interpreter
+// forward declaration of interpreter & compiler
 class Interpreter;
+class Compiler;
 
 class BaseAST {
  public:
@@ -16,6 +17,7 @@ class BaseAST {
 
   virtual ASTPtr Clone() = 0;
   virtual ValPtr Eval(Interpreter &intp) = 0;
+  virtual bool Compile(Compiler &comp) = 0;
 };
 
 class IdAST : public BaseAST {
@@ -24,6 +26,7 @@ class IdAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
+  bool Compile(Compiler &comp) override;
 
  private:
   std::string id_;
@@ -35,6 +38,7 @@ class NumAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
+  bool Compile(Compiler &comp) override;
 
  private:
   int num_;
@@ -47,6 +51,7 @@ class DefineAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
+  bool Compile(Compiler &comp) override;
 
  private:
   std::string id_;
@@ -58,8 +63,9 @@ class FuncAST : public BaseAST {
   FuncAST(IdList args, ASTPtr expr)
       : args_(std::move(args)), expr_(std::move(expr)) {}
 
-  ASTPtr Clone() override;
+  virtual ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
+  bool Compile(Compiler &comp) override;
 
   virtual ValPtr Call(Interpreter &intp);
 
@@ -82,7 +88,6 @@ class PseudoFuncAST : public FuncAST {
   ValPtr Call(Interpreter &intp) override;
 
  private:
-  IdList args_;
   ValCallback func_;
 };
 
@@ -93,6 +98,7 @@ class FunCallAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
+  bool Compile(Compiler &comp) override;
 
  private:
   std::string id_;

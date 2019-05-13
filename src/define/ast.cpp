@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+// method 'Clone'
+
 ASTPtr IdAST::Clone() {
   return std::make_unique<IdAST>(id_);
 }
@@ -20,7 +22,8 @@ ASTPtr FuncAST::Clone() {
 }
 
 ASTPtr PseudoFuncAST::Clone() {
-  return std::make_unique<PseudoFuncAST>(args_, func_);
+  auto func = static_cast<FuncAST *>(this);
+  return std::make_unique<PseudoFuncAST>(func->args(), func_);
 }
 
 ASTPtr FunCallAST::Clone() {
@@ -30,6 +33,8 @@ ASTPtr FunCallAST::Clone() {
   }
   return std::make_unique<FunCallAST>(id_, std::move(args));
 }
+
+// method 'Eval'
 
 ValPtr IdAST::Eval(Interpreter &intp) {
   return intp.EvalId(id_);
@@ -59,10 +64,39 @@ ValPtr FunCallAST::Eval(Interpreter &intp) {
   return intp.EvalFunCall(id_, args);
 }
 
+// method 'Call'
+
 ValPtr FuncAST::Call(Interpreter &intp) {
   return expr_->Eval(intp);
 }
 
 ValPtr PseudoFuncAST::Call(Interpreter &intp) {
   return intp.HandlePseudoFunCall(func_);
+}
+
+// method 'Compile'
+
+bool IdAST::Compile(Compiler &comp) {
+  // TODO
+  return false;
+}
+
+bool NumAST::Compile(Compiler &comp) {
+  // TODO
+  return false;
+}
+
+bool DefineAST::Compile(Compiler &comp) {
+  // TODO
+  return false;
+}
+
+bool FuncAST::Compile(Compiler &comp) {
+  // TODO
+  return false;
+}
+
+bool FunCallAST::Compile(Compiler &comp) {
+  // TODO
+  return false;
 }
