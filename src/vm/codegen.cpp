@@ -110,6 +110,41 @@ void VMCodeGen::PushInst(VMInst::OpCode op) {
   inst_buf_.push_back(*IntPtrCast<8>(&op));
 }
 
+void VMCodeGen::PushLabelInst(VMInst::OpCode op,
+                              const std::string &label) {
+  // try to find in named labels
+  auto it = named_labels_.find(label);
+  if (it != named_labels_.end()) {
+    PushInst({op, it->second});
+    return;
+  }
+  // if label not found
+  PushInst({op, 0});
+  auto inst = PtrCast<VMInst>(inst_buf_.data() + pc() - 4);
+  // create or modify record of unfilled map
+  auto unfilled_it = unfilled_named_.find(label);
+  if (unfilled_it == unfilled_named_.end()) {
+    unfilled_named_.insert({label, {inst}});
+  }
+  else {
+    unfilled_it->second.push_front(inst);
+  }
+}
+
+void VMCodeGen::PushLabelInst(VMInst::OpCode op,
+                              const VMCodeLabel &label) {
+  PushInst({op, 0});
+  auto inst = PtrCast<VMInst>(inst_buf_.data() + pc() - 4);
+  // create or modify record of unfilled map
+  auto it = unfilled_anon_.find(&label);
+  if (it == unfilled_anon_.end()) {
+    unfilled_anon_.insert({&label, {inst}});
+  }
+  else {
+    it->second.push_front(inst);
+  }
+}
+
 void VMCodeGen::FillNamedLabels() {
   for (const auto &it : unfilled_named_) {
     // get instruction list
@@ -134,9 +169,11 @@ std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
   std::uint32_t sym_len = 0;
   auto len_pos = content.tellp();
   content.write(PtrCast<char>(&sym_len), sizeof(sym_len));
-  for (const auto &i : sym_table_) {
-    content.write(i.c_str(), i.size() + 1);
-    sym_len += i.size() + 1;
+  // skip 'temp'
+  for (int i = 1; i < sym_table_.size(); ++i) {
+    const auto &sym = sym_table_[i];
+    content.write(sym.c_str(), sym.size() + 1);
+    sym_len += sym.size() + 1;
   }
   // update symbol table length
   content.seekp(len_pos);
@@ -194,7 +231,11 @@ void VMCodeGen::FUN() {
 }
 
 void VMCodeGen::CNST(std::uint32_t num) {
-  PushInst({InstOp::SET, num});
+  PushInst({InstOp::CNST, num});
+}
+
+void VMCodeGen::CNST(const std::string &label) {
+  PushLabelInst(InstOp::CNST, label);
 }
 
 void VMCodeGen::RET() {
@@ -222,36 +263,11 @@ void VMCodeGen::READ() {
 }
 
 void VMCodeGen::IF(const std::string &label) {
-  // try to find in named labels
-  auto it = named_labels_.find(label);
-  if (it != named_labels_.end()) {
-    PushInst({InstOp::IF, it->second});
-    return;
-  }
-  // if label not found
-  PushInst({InstOp::IF, 0});
-  auto inst = PtrCast<VMInst>(inst_buf_.data() + pc() - 4);
-  // create or modify record of unfilled map
-  auto unfilled_it = unfilled_named_.find(label);
-  if (unfilled_it == unfilled_named_.end()) {
-    unfilled_named_.insert({label, {inst}});
-  }
-  else {
-    unfilled_it->second.push_front(inst);
-  }
+  PushLabelInst(InstOp::IF, label);
 }
 
 void VMCodeGen::IF(const VMCodeLabel &label) {
-  PushInst({InstOp::IF, 0});
-  auto inst = PtrCast<VMInst>(inst_buf_.data() + pc() - 4);
-  // create or modify record of unfilled map
-  auto it = unfilled_anon_.find(&label);
-  if (it == unfilled_anon_.end()) {
-    unfilled_anon_.insert({&label, {inst}});
-  }
-  else {
-    it->second.push_front(inst);
-  }
+  PushLabelInst(InstOp::IF, label);
 }
 
 void VMCodeGen::IS(const std::string &name) {

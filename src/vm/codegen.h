@@ -69,6 +69,7 @@ class VMCodeGen {
   void SET(const std::string &name);
   void FUN();
   void CNST(std::uint32_t num);
+  void CNST(const std::string &label);
   void RET();
   void CENV();
   void CALL(const std::string &name);
@@ -113,7 +114,7 @@ class VMCodeGen {
 
  private:
   // file header of Ionia VM's bytecode file (bad bite c -> bad byte code)
-  static const std::uint32_t kFileHeader = 0xbadb17ec;
+  static const std::uint32_t kFileHeader = 0xec17dbba;
   // minimum bytecode file size
   static const std::uint32_t kMinFileSize = 3 * 4;
 
@@ -124,6 +125,8 @@ class VMCodeGen {
   std::uint32_t GetSymbolIndex(const std::string &name);
   void PushInst(const VMInst &inst);
   void PushInst(VMInst::OpCode op);
+  void PushLabelInst(VMInst::OpCode op, const std::string &label);
+  void PushLabelInst(VMInst::OpCode op, const VMCodeLabel &label);
   void FillNamedLabels();
 
   // tables
