@@ -29,7 +29,7 @@ struct VMInst {
   enum class OpCode : std::uint32_t {
     VM_INST_ALL(VM_EXPAND_LIST)
   } opcode : 6;
-  // 10-bit operand
+  // 26-bit operand
   std::uint32_t opr : 26;
 };
 
