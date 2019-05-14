@@ -23,7 +23,10 @@ void VMCodeLabel::FillLabel() {
   auto it = gen_->unfilled_anon_.find(this);
   assert(it != gen_->unfilled_anon_.end());
   // traversal all instructions and fill label info
-  for (const auto &i : it->second) i->opr = offset_;
+  for (const auto &i : it->second) {
+    auto inst = PtrCast<VMInst>(gen_->inst_buf_.data() + i);
+    inst->opr = offset_;
+  }
   // erase record
   gen_->unfilled_anon_.erase(it);
 }
@@ -101,9 +104,11 @@ std::uint32_t VMCodeGen::GetSymbolIndex(const std::string &name) {
 }
 
 void VMCodeGen::PushInst(const VMInst &inst) {
-  inst_buf_.resize(4);
-  auto buf = IntPtrCast<32>(inst_buf_.data() + pc() - 4);
-  *buf = *IntPtrCast<32>(&inst);
+  auto ptr = IntPtrCast<8>(&inst);
+  inst_buf_.push_back(ptr[0]);
+  inst_buf_.push_back(ptr[1]);
+  inst_buf_.push_back(ptr[2]);
+  inst_buf_.push_back(ptr[3]);
 }
 
 void VMCodeGen::PushInst(VMInst::OpCode op) {
@@ -120,28 +125,28 @@ void VMCodeGen::PushLabelInst(VMInst::OpCode op,
   }
   // if label not found
   PushInst({op, 0});
-  auto inst = PtrCast<VMInst>(inst_buf_.data() + pc() - 4);
+  auto offset = pc() - 4;
   // create or modify record of unfilled map
   auto unfilled_it = unfilled_named_.find(label);
   if (unfilled_it == unfilled_named_.end()) {
-    unfilled_named_.insert({label, {inst}});
+    unfilled_named_.insert({label, {offset}});
   }
   else {
-    unfilled_it->second.push_front(inst);
+    unfilled_it->second.push_front(offset);
   }
 }
 
 void VMCodeGen::PushLabelInst(VMInst::OpCode op,
                               const VMCodeLabel &label) {
   PushInst({op, 0});
-  auto inst = PtrCast<VMInst>(inst_buf_.data() + pc() - 4);
+  auto offset = pc() - 4;
   // create or modify record of unfilled map
   auto it = unfilled_anon_.find(&label);
   if (it == unfilled_anon_.end()) {
-    unfilled_anon_.insert({&label, {inst}});
+    unfilled_anon_.insert({&label, {offset}});
   }
   else {
-    it->second.push_front(inst);
+    it->second.push_front(offset);
   }
 }
 
@@ -154,7 +159,10 @@ void VMCodeGen::FillNamedLabels() {
     assert(label_it != named_labels_.end());
     auto offset = label_it->second;
     // fill all instructions
-    for (const auto &i : insts) i->opr = offset;
+    for (const auto &i : insts) {
+      auto inst = PtrCast<VMInst>(inst_buf_.data() + i);
+      inst->opr = offset;
+    }
   }
   unfilled_named_.clear();
 }

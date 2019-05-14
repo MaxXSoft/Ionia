@@ -120,7 +120,7 @@ class VMCodeGen {
 
   friend class VMCodeLabel;
 
-  using InstList = std::forward_list<VMInst *>;
+  using OffsetList = std::forward_list<std::uint32_t>;
 
   std::uint32_t GetSymbolIndex(const std::string &name);
   void PushInst(const VMInst &inst);
@@ -137,8 +137,8 @@ class VMCodeGen {
   // map of named labels
   std::map<std::string, std::uint32_t> named_labels_;
   // map of unfilled insturctions
-  std::map<const VMCodeLabel *, InstList> unfilled_anon_;
-  std::map<std::string, InstList> unfilled_named_;
+  std::map<const VMCodeLabel *, OffsetList> unfilled_anon_;
+  std::map<std::string, OffsetList> unfilled_named_;
 };
 
 #endif  // IONIA_VM_BYTECODE_H_
