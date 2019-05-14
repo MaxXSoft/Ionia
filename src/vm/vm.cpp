@@ -71,25 +71,14 @@ bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
 }
 
 bool VM::RegisterFunction(const std::string &name, ExtFunc func) {
-  // check if conflict
+  // check if exists
   for (const auto &i : sym_table_) {
-    if (i == name) return false;
+    if (i == name) {
+      ext_funcs_.insert({i.c_str(), func});
+      return true;
+    }
   }
-  sym_table_.push_back(name);
-  ext_funcs_.insert({name, func});
-  return true;
-}
-
-bool VM::RegisterFunction(const std::string &name, ExtFunc func,
-                          std::uint32_t &id) {
-  // check if conflict
-  for (const auto &i : sym_table_) {
-    if (i == name) return false;
-  }
-  id = sym_table_.size();
-  sym_table_.push_back(name);
-  ext_funcs_.insert({name, func});
-  return true;
+  return false;
 }
 
 bool VM::CallFunction(const std::string &name,
@@ -120,12 +109,32 @@ bool VM::CallFunction(const std::string &name,
   return result;
 }
 
+const VMValue *VM::GetValueFromEnv(const VMEnvPtr &env,
+                                   const std::string &name) {
+  // find name in symbol table
+  for (std::uint32_t i = 0; i < sym_table_.size(); ++i) {
+    if (sym_table_[i] == name) {
+      auto it = env->slot.find(i + 1);
+      return it == env->slot.end() ? nullptr : &it->second;
+    }
+  }
+  return nullptr;
+}
+
 void VM::Reset() {
   pc_ = 0;
   val_reg_ = {0, nullptr};
   while (!envs_.empty()) envs_.pop();
-  // create root environment
-  root_ = MakeVMEnv();
+  // create root environment if not exists
+  if (!root_) {
+    root_ = MakeVMEnv();
+  }
+  else {
+    // reset root environment
+    root_->outer = nullptr;
+    root_->ret_pc = 0;
+    root_->slot.clear();
+  }
   envs_.push(root_);
 }
 

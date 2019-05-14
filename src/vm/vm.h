@@ -21,14 +21,15 @@ class VM {
 
   // register an external function
   bool RegisterFunction(const std::string &name, ExtFunc func);
-  // register an external function, returns function id
-  bool RegisterFunction(const std::string &name, ExtFunc func,
-                        std::uint32_t &id);
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
                     const std::vector<VMValue> &args, VMValue &ret);
 
-  // reset VM
+  // get value from VM environment
+  const VMValue *GetValueFromEnv(const VMEnvPtr &env,
+                                 const std::string &name);
+
+  // reset VM's status (except symbol table, GFT and EFT)
   void Reset();
   // run current program
   bool Run();
@@ -47,7 +48,7 @@ class VM {
   // tables
   VMSymbolTable sym_table_;
   VMGlobalFuncTable global_funcs_;
-  std::unordered_map<std::string, ExtFunc> ext_funcs_;
+  std::unordered_map<const char *, ExtFunc> ext_funcs_;
 };
 
 #endif  // IONIA_VM_VM_H_
