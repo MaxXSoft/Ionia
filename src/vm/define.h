@@ -74,4 +74,9 @@ inline VMEnvPtr MakeVMEnv(const VMEnvPtr &outer) {
   return env;
 }
 
+// make new VM integer value
+inline VMValue MakeVMValue(std::int32_t value) {
+  return {value, nullptr};
+}
+
 #endif  // IONIA_VM_DEFINE_H_
