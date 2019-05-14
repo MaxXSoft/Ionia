@@ -178,6 +178,8 @@ bool VM::Run() {
   // put constant number to value register
   VM_LABEL(CNST) {
     val_reg_.value = inst->opr;
+    // negative constant number
+    if (inst->opr & (1 << 25)) val_reg_.value |= 0xfc000000;
     val_reg_.env = nullptr;
     VM_NEXT(4);
   }
