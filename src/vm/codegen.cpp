@@ -83,8 +83,8 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
       glob_func.args.push_back(*IntPtrCast<32>(buffer.data() + pos + i));
       i += 4;
     }
-    // insert to table
-    global_funcs.insert({sym_table[*func_id], glob_func});
+    // insert to table (skip 'temp' slot)
+    global_funcs.insert({sym_table[*func_id - 1], glob_func});
     // reset
     glob_func.args.clear();
   }
@@ -93,14 +93,17 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
   return static_cast<int>(pos);
 }
 
+// TODO: optimize
 std::uint32_t VMCodeGen::GetSymbolIndex(const std::string &name) {
-  // TODO: optimize
+  // empty name represents 'temp' slot
+  if (name.empty()) return 0;
+  // search name in symbol table
   for (int i = 0; i < sym_table_.size(); ++i) {
-    if (sym_table_[i] == name) return i;
+    if (sym_table_[i] == name) return i + 1;
   }
   // symbol not found, create new
   sym_table_.push_back(name);
-  return sym_table_.size() - 1;
+  return sym_table_.size();
 }
 
 void VMCodeGen::PushInst(const VMInst &inst) {
@@ -177,8 +180,7 @@ std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
   std::uint32_t sym_len = 0;
   auto len_pos = content.tellp();
   content.write(PtrCast<char>(&sym_len), sizeof(sym_len));
-  // skip 'temp'
-  for (int i = 1; i < sym_table_.size(); ++i) {
+  for (int i = 0; i < sym_table_.size(); ++i) {
     const auto &sym = sym_table_[i];
     content.write(sym.c_str(), sym.size() + 1);
     sym_len += sym.size() + 1;
@@ -374,7 +376,7 @@ VMCodeLabel VMCodeGen::NewLabel() {
 void VMCodeGen::RegisterGlobalFunction(
     const std::string &name, const std::vector<std::string> &args) {
   // get function id
-  assert(name[0] == '$');
+  assert(!name.empty() && name[0] == '$');
   auto func_id = GetSymbolIndex(name);
   assert(global_funcs_.find(func_id) == global_funcs_.end());
   // initialize global func structure

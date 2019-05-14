@@ -51,8 +51,6 @@ private:
 // code generator of Ionia VM
 class VMCodeGen {
  public:
-  VMCodeGen() { sym_table_.push_back("temp"); }
-
   // Function returns start position of bytecode segment.
   // If error, returns -1.
   static int ParseBytecode(const std::vector<std::uint8_t> &buffer,
