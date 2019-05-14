@@ -373,6 +373,12 @@ VMCodeLabel VMCodeGen::NewLabel() {
   return VMCodeLabel(this, pc());
 }
 
+void VMCodeGen::DefineFunction(const std::string &name) {
+  CNST(name);
+  FUN();
+  SET(name);
+}
+
 void VMCodeGen::RegisterGlobalFunction(
     const std::string &name, const std::vector<std::string> &args) {
   // get function id

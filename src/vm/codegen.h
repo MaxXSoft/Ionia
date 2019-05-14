@@ -103,6 +103,8 @@ class VMCodeGen {
   // create a new anonymous label
   VMCodeLabel NewLabel();
 
+  // define function (pseudo instruction)
+  void DefineFunction(const std::string &name);
   // register new global function
   void RegisterGlobalFunction(const std::string &name,
                               const std::vector<std::string> &args);
