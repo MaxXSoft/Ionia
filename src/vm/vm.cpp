@@ -68,8 +68,7 @@ const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
     }
   }
   // value not found
-  assert(inst->opr != 0);
-  auto str = sym_table_[inst->opr - 1].c_str();
+  auto str = sym_table_[inst->opr].c_str();
   return str;
 }
 
@@ -201,15 +200,8 @@ bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
   return true;
 }
 
-bool VM::RegisterFunction(const std::string &name, ExtFunc func) {
-  // check if exists
-  for (const auto &i : sym_table_) {
-    if (i == name) {
-      ext_funcs_.insert({i.c_str(), func});
-      return true;
-    }
-  }
-  return false;
+void VM::RegisterFunction(const std::string &name, ExtFunc func) {
+  ext_funcs_.insert({name, func});
 }
 
 bool VM::CallFunction(const std::string &name,
@@ -238,18 +230,6 @@ bool VM::CallFunction(const std::string &name,
   // restore stack
   envs_ = last_envs;
   return result;
-}
-
-const VMValue *VM::GetValueFromEnv(const VMEnvPtr &env,
-                                   const std::string &name) {
-  // find name in symbol table
-  for (std::uint32_t i = 0; i < sym_table_.size(); ++i) {
-    if (sym_table_[i] == name) {
-      auto it = env->slot.find(i + 1);
-      return it == env->slot.end() ? nullptr : &it->second;
-    }
-  }
-  return nullptr;
 }
 
 void VM::Reset() {

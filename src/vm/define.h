@@ -61,18 +61,12 @@ using VMGlobalFuncTable = std::unordered_map<std::string, VMGlobalFunc>;
 
 // make new VM environment
 inline VMEnvPtr MakeVMEnv() {
-  auto env = std::make_shared<VMEnv>(VMEnv({{}, nullptr, 0}));
-  // insert temp register into slot
-  env->slot.insert({0, {0, nullptr}});
-  return env;
+  return std::make_shared<VMEnv>(VMEnv({{}, nullptr, 0}));
 }
 
 // make new VM environment with specific outer environment
 inline VMEnvPtr MakeVMEnv(const VMEnvPtr &outer) {
-  auto env = std::make_shared<VMEnv>(VMEnv({{}, outer, 0}));
-  // insert temp register into slot
-  env->slot.insert({0, {0, nullptr}});
-  return env;
+  return std::make_shared<VMEnv>(VMEnv({{}, outer, 0}));
 }
 
 // make new VM integer value

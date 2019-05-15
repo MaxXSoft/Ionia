@@ -25,14 +25,10 @@ class VM {
   bool LoadProgram(const std::vector<std::uint8_t> &buffer);
 
   // register an external function
-  bool RegisterFunction(const std::string &name, ExtFunc func);
+  void RegisterFunction(const std::string &name, ExtFunc func);
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
                     const std::vector<VMValue> &args, VMValue &ret);
-
-  // get value from VM environment
-  const VMValue *GetValueFromEnv(const VMEnvPtr &env,
-                                 const std::string &name);
 
   // reset VM's status (except symbol table, GFT and EFT)
   void Reset();

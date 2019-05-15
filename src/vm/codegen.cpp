@@ -83,8 +83,8 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
       glob_func.args.push_back(*IntPtrCast<32>(buffer.data() + pos + i));
       i += 4;
     }
-    // insert to table (skip 'temp' slot)
-    global_funcs.insert({sym_table[*func_id - 1], glob_func});
+    // insert to table
+    global_funcs.insert({sym_table[*func_id], glob_func});
     // reset
     glob_func.args.clear();
   }
@@ -95,15 +95,13 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
 
 // TODO: optimize
 std::uint32_t VMCodeGen::GetSymbolIndex(const std::string &name) {
-  // empty name represents 'temp' slot
-  if (name.empty()) return 0;
   // search name in symbol table
   for (int i = 0; i < sym_table_.size(); ++i) {
-    if (sym_table_[i] == name) return i + 1;
+    if (sym_table_[i] == name) return i;
   }
   // symbol not found, create new
   sym_table_.push_back(name);
-  return sym_table_.size();
+  return sym_table_.size() - 1;
 }
 
 void VMCodeGen::PushInst(const VMInst &inst) {
