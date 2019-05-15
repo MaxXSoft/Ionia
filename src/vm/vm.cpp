@@ -303,8 +303,17 @@ bool VM::Run() {
   // put constant number to value register
   VM_LABEL(CNST) {
     val_reg_.value = inst->opr;
-    // negative constant number
-    if (inst->opr & (1 << 25)) val_reg_.value |= 0xfc000000;
+    // sign extend
+    if (inst->opr & (1 << (VM_INST_OPR_WIDTH - 1))) {
+      val_reg_.value |= ~VM_INST_IMM_MASK;
+    }
+    val_reg_.env = nullptr;
+    VM_NEXT(4);
+  }
+
+  // set constant number as higher part of value register
+  VM_LABEL(CNSH) {
+    val_reg_.value |= inst->opr << VM_INST_OPCODE_WIDTH;
     val_reg_.env = nullptr;
     VM_NEXT(4);
   }
