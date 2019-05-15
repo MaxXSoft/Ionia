@@ -248,6 +248,10 @@ void VMCodeGen::CNST(const std::string &label) {
   PushLabelInst(InstOp::CNST, label);
 }
 
+void VMCodeGen::CNSH(std::uint32_t num) {
+  PushInst({InstOp::CNSH, num});
+}
+
 void VMCodeGen::RET() {
   PushInst(InstOp::RET);
 }
@@ -280,12 +284,10 @@ void VMCodeGen::DefineFunction(const std::string &name) {
 }
 
 void VMCodeGen::SetConst(std::int32_t num) {
-  if (num & ~VM_INST_IMM_MASK) {
-    CNST(num & VM_INST_IMM_MASK);
-    // CNSH((num & ~VM_INST_IMM_MASK) >> VM_INST_OPR_WIDTH);
-  }
-  else {
-    CNST(num);
+  CNST(num & VM_INST_IMM_MASK);
+  auto hi = num & ~VM_INST_IMM_MASK;
+  if (hi && hi != ~VM_INST_IMM_MASK) {
+    CNSH((num & ~VM_INST_IMM_MASK) >> VM_INST_OPCODE_WIDTH);
   }
 }
 
