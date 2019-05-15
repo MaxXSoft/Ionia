@@ -362,22 +362,21 @@ bool VM::Run() {
     VM_NEXT(4);
   }
 
-  // push slot value into value stack
+  // push value register into value stack
   VM_LABEL(PUSH) {
-    if (!GetEnvValue(inst, opr)) return false;
-    vals_.push(opr);
-    VM_NEXT(4);
+    vals_.push(val_reg_);
+    VM_NEXT(1);
   }
 
-  // pop value in value stack to slot
+  // pop value in value stack to value register
   VM_LABEL(POP) {
     if (vals_.empty()) {
       return PrintError("pop from empty stack");
     }
     else {
-      envs_.top()->slot[inst->opr] = vals_.top();
+      val_reg_ = vals_.top();
       vals_.pop();
-      VM_NEXT(4);
+      VM_NEXT(1);
     }
   }
 

@@ -32,8 +32,8 @@ class VMCodeGen {
   void FUN();
   void CNST(std::uint32_t num);
   void CNSH(std::uint32_t num);
-  void PUSH(const std::string &name);
-  void POP(const std::string &name);
+  void PUSH();
+  void POP();
   void RET();
   void CALL(const std::string &name);
   void TCAL(const std::string &name);
