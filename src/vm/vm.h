@@ -60,7 +60,7 @@ class VM {
   template <typename Func, typename... Args>
   void BindExtFunc(const std::string &name, Func func, Args... args) {
     using namespace std::placeholders;
-    ext_funcs_[name] = std::bind(func, this, _1, _2, args);
+    RegisterFunction(name, std::bind(func, this, _1, _2, args));
   }
 
   // Ionia standard fucntions
