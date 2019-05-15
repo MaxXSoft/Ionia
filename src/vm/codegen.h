@@ -74,31 +74,6 @@ class VMCodeGen {
   void CENV();
   void CALL(const std::string &name);
   void TCAL(const std::string &name);
-  void WRIT();
-  void READ();
-  void IF(const std::string &label);
-  void IF(const VMCodeLabel &label);
-  void IS(const std::string &name);
-  void EQL(const std::string &name);
-  void NEQ(const std::string &name);
-  void LT(const std::string &name);
-  void LEQ(const std::string &name);
-  void GT(const std::string &name);
-  void GEQ(const std::string &name);
-  void ADD(const std::string &name);
-  void SUB(const std::string &name);
-  void MUL(const std::string &name);
-  void DIV(const std::string &name);
-  void MOD(const std::string &name);
-  void AND(const std::string &name);
-  void OR(const std::string &name);
-  void NOT(const std::string &name);
-  void XOR(const std::string &name);
-  void SHL(const std::string &name);
-  void SHR(const std::string &name);
-  void LAND(const std::string &name);
-  void LOR(const std::string &name);
-  void LNOT(const std::string &name);
 
   // create a new named label
   void LABEL(const std::string &label);
@@ -107,6 +82,8 @@ class VMCodeGen {
 
   // define function (pseudo instruction)
   void DefineFunction(const std::string &name);
+  // set constant value (pseudo instruction)
+  void SetConst(std::int32_t num);
   // register new global function
   void RegisterGlobalFunction(const std::string &name,
                               const std::vector<std::string> &args);

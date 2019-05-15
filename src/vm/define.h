@@ -11,26 +11,27 @@
 // all supported instructions of Ionia VM
 #define VM_INST_ALL(f)                      \
   f(GET) f(SET) f(FUN) f(CNST)              \
-  f(RET) f(CENV) f(CALL) f(TCAL)            \
-  f(WRIT) f(READ) f(IF) f(IS)               \
-  f(EQL) f(NEQ) f(LT) f(LEQ) f(GT) f(GEQ)   \
-  f(ADD) f(SUB) f(MUL) f(DIV) f(MOD)        \
-  f(AND) f(OR) f(NOT) f(XOR) f(SHL) f(SHR)  \
-  f(LAND) f(LOR) f(LNOT)
+  f(RET) f(CENV) f(CALL) f(TCAL)
 // expand macro to comma-separated list
 #define VM_EXPAND_LIST(i)         i,
 // expand macro to label list
 #define VM_EXPAND_LABEL_LIST(i)   &&VML_##i,
 // define a label of VM threading
 #define VM_LABEL(l)               VML_##l:
+// width of opcode field in VMInst
+#define VM_INST_OPCODE_WIDTH      5
+// width of oprand field in VMInst
+#define VM_INST_OPR_WIDTH         (32 - VM_INST_OPCODE_WIDTH)
+// immediate number mask of VMInst
+#define VM_INST_IMM_MASK          ((1 << VM_INST_OPR_WIDTH) - 1)
 
 struct VMInst {
-  // 6-bit opcode
+  // opcode
   enum class OpCode : std::uint32_t {
     VM_INST_ALL(VM_EXPAND_LIST)
-  } opcode : 6;
-  // 26-bit operand
-  std::uint32_t opr : 26;
+  } opcode : VM_INST_OPCODE_WIDTH;
+  // operand
+  std::uint32_t opr : VM_INST_OPR_WIDTH;
 };
 
 // forward declaration of VMEnv
