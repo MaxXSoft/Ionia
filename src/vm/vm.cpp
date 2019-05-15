@@ -93,26 +93,20 @@ bool VM::IonInput(ValueStack &vals, VMValue &ret) {
   return true;
 }
 
-// TODO
 bool VM::IonIf(ValueStack &vals, VMValue &ret) {
   if (vals.size() < 3) return false;
   // fetch condition
   if (vals.top().env) return false;
   auto cond = vals.top().value != 0;
   vals.pop();
-  // fetch true function
-  if (!vals.top().env) return false;
+  // fetch true part
   auto then = vals.top();
   vals.pop();
-  // fetch false function
-  if (!vals.top().env) return false;
+  // fetch false part
   auto else_then = vals.top();
   vals.pop();
-  // jump to corresponding function
-  // TODO
-  // return to VM
-  ret.value = 0;
-  ret.env = nullptr;
+  // just return target value, let VM do the rest
+  ret = cond ? then : else_then;
   return true;
 }
 
@@ -335,6 +329,7 @@ bool VM::Run() {
   }
 
   // call function and create new environment
+  // special handle for standard '?' function
   VM_LABEL(CALL) {
     // get function object
     if (auto str = GetEnvValue(inst, opr)) {
@@ -346,7 +341,13 @@ bool VM::Run() {
           return PrintError("invalid function call");
         }
         envs_.pop();
-        VM_NEXT(4);
+        if (str[0] != '?' || str[1] != '\0') {
+          // calling standard '?' function
+          opr = val_reg_;
+        }
+        else {
+          VM_NEXT(4);
+        }
       }
       else {
         // raise error
@@ -363,6 +364,7 @@ bool VM::Run() {
   }
 
   // tail call function and modify outer environment
+  // special handle for standard '?' function
   VM_LABEL(TCAL) {
     // get function object
     if (auto str = GetEnvValue(inst, opr)) {
@@ -373,10 +375,16 @@ bool VM::Run() {
         if (!it->second(vals_, val_reg_)) {
           return PrintError("invalid function call");
         }
-        // return from tail call
-        pc_ = envs_.top()->ret_pc;
-        envs_.pop();
-        VM_NEXT(0);
+        if (str[0] != '?' || str[1] != '\0') {
+          // calling standard '?' function
+          opr = val_reg_;
+        }
+        else {
+          // return from tail call
+          pc_ = envs_.top()->ret_pc;
+          envs_.pop();
+          VM_NEXT(0);
+        }
       }
       else {
         // raise error
@@ -385,7 +393,7 @@ bool VM::Run() {
     }
     // check if is not a function
     if (!opr.env) return PrintError("calling a non-function");
-    // set up environment
+    // switch environment
     envs_.top()->outer = opr.env;
     pc_ = opr.value;
     VM_NEXT(0);
