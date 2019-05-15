@@ -47,9 +47,13 @@ class VM {
   // initialize external function table
   // add all Ionia standard functions, like 'is', '?', 'eq', '+'...
   void InitExtFuncs();
-  // Get value from current environment.
-  // Returns symbol name if not found, otherwise returns nullptr.
-  const char *GetEnvValue(VMInst *inst, VMValue &value);
+  // get value from current environment, return false if not found
+  bool GetEnvValue(VMInst *inst, VMValue &value);
+
+  // call a VM function
+  bool DoCall(const VMValue &func);
+  // tail call a VM function
+  bool DoTailCall(const VMValue &func);
 
   // bind member functions to external function
   template <typename Func, typename... Args>
@@ -76,7 +80,7 @@ class VM {
   VMSymbolTable sym_table_;
   VMFuncPCTable pc_table_;
   VMGlobalFuncTable global_funcs_;
-  std::unordered_map<std::string, ExtFunc> ext_funcs_;
+  std::unordered_map<std::uint32_t, ExtFunc> ext_funcs_;
 };
 
 #endif  // IONIA_VM_VM_H_

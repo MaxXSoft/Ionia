@@ -54,14 +54,14 @@ void VM::InitExtFuncs() {
   BindExtFunc("!", &VM::IonCalcOp, Operator::LogicNot);
 }
 
-const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
+bool VM::GetEnvValue(VMInst *inst, VMValue &value) {
   auto cur_env = envs_.top();
   // recursively find value in environments
   while (cur_env) {
     auto it = cur_env->slot.find(inst->opr);
     if (it != cur_env->slot.end()) {
       value = it->second;
-      return nullptr;
+      return true;
     }
     else {
       cur_env = cur_env->outer;
@@ -69,7 +69,59 @@ const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
   }
   // value not found
   auto str = sym_table_[inst->opr].c_str();
-  return str;
+  return PrintError("not found", str);
+}
+
+bool VM::DoCall(const VMValue &func) {
+  // check if is not a function
+  if (!func.env) return PrintError("calling a non-function");
+  // check if is an external function
+  auto it = ext_funcs_.find(func.value);
+  if (it != ext_funcs_.end()) {
+    // call external function
+    envs_.push(MakeVMEnv());
+    envs_.top()->ret_pc = pc_ + 4;
+    if (!it->second(vals_, val_reg_)) {
+      return PrintError("invalid function call");
+    }
+    pc_ = envs_.top()->ret_pc;
+    envs_.pop();
+  }
+  else {
+    // set up environment
+    envs_.push(MakeVMEnv(func.env));
+    envs_.top()->ret_pc = pc_ + 4;
+    if (func.value >= pc_table_.size()) {
+      return PrintError("invalid function pc");
+    }
+    pc_ = pc_table_[func.value];
+  }
+  return true;
+}
+
+bool VM::DoTailCall(const VMValue &func) {
+  // check if is not a function
+  if (!func.env) return PrintError("calling a non-function");
+  // check if is an external function
+  auto it = ext_funcs_.find(func.value);
+  if (it != ext_funcs_.end()) {
+    // call external function
+    envs_.top()->outer = nullptr;
+    if (!it->second(vals_, val_reg_)) {
+      return PrintError("invalid function call");
+    }
+    pc_ = envs_.top()->ret_pc;
+    envs_.pop();
+  }
+  else {
+    // switch environment
+    envs_.top()->outer = func.env;
+    if (func.value >= pc_table_.size()) {
+      return PrintError("invalid function pc");
+    }
+    pc_ = pc_table_[func.value];
+  }
+  return true;
 }
 
 bool VM::IonPrint(ValueStack &vals, VMValue &ret) {
@@ -219,7 +271,7 @@ bool VM::CallFunction(const std::string &name,
   while (!envs_.empty()) envs_.pop();
   // call function
   envs_.push(env);
-  pc_ = func.func_pc;
+  pc_ = pc_table_[func.pc_id];
   auto result = Run();
   if (result) ret = val_reg_;
   // restore stack
@@ -255,12 +307,8 @@ bool VM::Run() {
 
   // get value of identifier from environment
   VM_LABEL(GET) {
-    if (auto str = GetEnvValue(inst, val_reg_)) {
-      return PrintError("not found", str);
-    }
-    else {
-      VM_NEXT(4);
-    }
+    if (!GetEnvValue(inst, val_reg_)) return false;
+    VM_NEXT(4);
   }
 
   // set value of identifier in current environment
@@ -295,13 +343,9 @@ bool VM::Run() {
 
   // push slot value into value stack
   VM_LABEL(PUSH) {
-    if (auto str = GetEnvValue(inst, opr)) {
-      return PrintError("not found", str);
-    }
-    else {
-      vals_.push(opr);
-      VM_NEXT(4);
-    }
+    if (!GetEnvValue(inst, opr)) return false;
+    vals_.push(opr);
+    VM_NEXT(4);
   }
 
   // pop value in value stack to slot
@@ -330,73 +374,18 @@ bool VM::Run() {
   }
 
   // call function and create new environment
-  // special handle for standard '?' function
   VM_LABEL(CALL) {
     // get function object
-    if (auto str = GetEnvValue(inst, opr)) {
-      auto it = ext_funcs_.find(str);
-      if (it != ext_funcs_.end()) {
-        // calling an external function
-        envs_.push(MakeVMEnv());
-        if (!it->second(vals_, val_reg_)) {
-          return PrintError("invalid function call");
-        }
-        envs_.pop();
-        if (str[0] != '?' || str[1] != '\0') {
-          // calling standard '?' function
-          opr = val_reg_;
-        }
-        else {
-          VM_NEXT(4);
-        }
-      }
-      else {
-        // raise error
-        return PrintError("not found", str);
-      }
-    }
-    // check if is not a function
-    if (!opr.env) return PrintError("calling a non-function");
-    // set up environment
-    envs_.push(MakeVMEnv(opr.env));
-    envs_.top()->ret_pc = pc_ + 4;
-    pc_ = opr.value;
+    if (!GetEnvValue(inst, opr)) return false;
+    if (!DoCall(opr)) return false;
     VM_NEXT(0);
   }
 
   // tail call function and modify outer environment
-  // special handle for standard '?' function
   VM_LABEL(TCAL) {
     // get function object
-    if (auto str = GetEnvValue(inst, opr)) {
-      auto it = ext_funcs_.find(str);
-      if (it != ext_funcs_.end()) {
-        // calling an external function
-        envs_.top()->outer = nullptr;
-        if (!it->second(vals_, val_reg_)) {
-          return PrintError("invalid function call");
-        }
-        if (str[0] != '?' || str[1] != '\0') {
-          // calling standard '?' function
-          opr = val_reg_;
-        }
-        else {
-          // return from tail call
-          pc_ = envs_.top()->ret_pc;
-          envs_.pop();
-          VM_NEXT(0);
-        }
-      }
-      else {
-        // raise error
-        return PrintError("not found", str);
-      }
-    }
-    // check if is not a function
-    if (!opr.env) return PrintError("calling a non-function");
-    // switch environment
-    envs_.top()->outer = opr.env;
-    pc_ = opr.value;
+    if (!GetEnvValue(inst, opr)) return false;
+    if (!DoTailCall(opr)) return false;
     VM_NEXT(0);
   }
 
