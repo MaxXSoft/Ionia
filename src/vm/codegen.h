@@ -57,6 +57,7 @@ class VMCodeGen {
   // If error, returns -1.
   static int ParseBytecode(const std::vector<std::uint8_t> &buffer,
                            VMSymbolTable &sym_table,
+                           VMFuncPCTable &pc_table,
                            VMGlobalFuncTable &global_funcs);
 
   // generate bytecode vector
@@ -97,7 +98,7 @@ class VMCodeGen {
   // file header of Ionia VM's bytecode file (bad bite c -> bad byte code)
   static const std::uint32_t kFileHeader = 0xec17dbba;
   // minimum bytecode file size
-  static const std::uint32_t kMinFileSize = 3 * 4;
+  static const std::uint32_t kMinFileSize = 4 * 4;
 
   friend class VMCodeLabel;
 
@@ -112,6 +113,7 @@ class VMCodeGen {
 
   // tables
   VMSymbolTable sym_table_;
+  VMFuncPCTable pc_table_;
   std::map<std::uint32_t, VMGlobalFunc> global_funcs_;
   // buffer that stores instructions
   std::vector<std::uint8_t> inst_buf_;

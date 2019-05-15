@@ -38,6 +38,7 @@ void VMCodeLabel::SetLabel() {
 
 int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
                              VMSymbolTable &sym_table,
+                             VMFuncPCTable &pc_table,
                              VMGlobalFuncTable &global_funcs) {
   std::size_t pos = 0;
   // check buffer size
@@ -62,6 +63,15 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
     }
   }
   pos += *sym_len;
+  // read function pc table length
+  auto fpt_len = IntPtrCast<32>(buffer.data() + pos);
+  pos += 4;
+  // read function pc table
+  for (std::size_t i = 0; i < *fpt_len; i += 4) {
+    auto func_pc = IntPtrCast<32>(buffer.data() + pos + i);
+    pc_table.push_back(*func_pc);
+  }
+  pos += *fpt_len;
   // read global function table length
   auto global_len = IntPtrCast<32>(buffer.data() + pos);
   pos += 4;
@@ -178,15 +188,20 @@ std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
   std::uint32_t sym_len = 0;
   auto len_pos = content.tellp();
   content.write(PtrCast<char>(&sym_len), sizeof(sym_len));
-  for (int i = 0; i < sym_table_.size(); ++i) {
-    const auto &sym = sym_table_[i];
-    content.write(sym.c_str(), sym.size() + 1);
-    sym_len += sym.size() + 1;
+  for (const auto &i : sym_table_) {
+    content.write(i.c_str(), i.size() + 1);
+    sym_len += i.size() + 1;
   }
   // update symbol table length
   content.seekp(len_pos);
   content.write(PtrCast<char>(&sym_len), sizeof(sym_len));
   content.seekp(0, std::ios::end);
+  // generate function pc table
+  std::uint32_t fpt_len = pc_table_.size() * sizeof(std::uint32_t);
+  content.write(PtrCast<char>(&fpt_len), sizeof(fpt_len));
+  for (const auto &i : pc_table_) {
+    content.write(PtrCast<char>(&i), sizeof(i));
+  }
   // generate global function table
   std::uint32_t gft_len = 0;
   len_pos = content.tellp();

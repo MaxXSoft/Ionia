@@ -74,6 +74,7 @@ class VM {
   VMEnvPtr root_;
   // tables
   VMSymbolTable sym_table_;
+  VMFuncPCTable pc_table_;
   VMGlobalFuncTable global_funcs_;
   std::unordered_map<std::string, ExtFunc> ext_funcs_;
 };

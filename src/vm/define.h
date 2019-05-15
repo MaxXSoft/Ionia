@@ -57,6 +57,7 @@ struct VMGlobalFunc {
 
 // definition of tables
 using VMSymbolTable = std::vector<std::string>;
+using VMFuncPCTable = std::vector<std::uint32_t>;
 using VMGlobalFuncTable = std::unordered_map<std::string, VMGlobalFunc>;
 
 // make new VM environment
