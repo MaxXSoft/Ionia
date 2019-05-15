@@ -26,6 +26,34 @@ bool PrintError(const char *message, const char *symbol) {
 
 }  // namespace
 
+void VM::InitExtFuncs() {
+  // set up external functions
+  BindExtFunc("<<<", &VM::IonPrint);
+  BindExtFunc(">>>", &VM::IonInput);
+  BindExtFunc("?", &VM::IonIf);
+  BindExtFunc("is", &VM::IonIs);
+  BindExtFunc("eq", &VM::IonCalcOp, Operator::Equal);
+  BindExtFunc("neq", &VM::IonCalcOp, Operator::NotEqual);
+  BindExtFunc("lt", &VM::IonCalcOp, Operator::Less);
+  BindExtFunc("le", &VM::IonCalcOp, Operator::LessEqual);
+  BindExtFunc("gt", &VM::IonCalcOp, Operator::Great);
+  BindExtFunc("ge", &VM::IonCalcOp, Operator::GreatEqual);
+  BindExtFunc("+", &VM::IonCalcOp, Operator::Add);
+  BindExtFunc("-", &VM::IonCalcOp, Operator::Sub);
+  BindExtFunc("*", &VM::IonCalcOp, Operator::Mul);
+  BindExtFunc("/", &VM::IonCalcOp, Operator::Div);
+  BindExtFunc("%", &VM::IonCalcOp, Operator::Mod);
+  BindExtFunc("&", &VM::IonCalcOp, Operator::And);
+  BindExtFunc("|", &VM::IonCalcOp, Operator::Or);
+  BindExtFunc("~", &VM::IonCalcOp, Operator::Not);
+  BindExtFunc("^", &VM::IonCalcOp, Operator::Xor);
+  BindExtFunc("<<", &VM::IonCalcOp, Operator::Shl);
+  BindExtFunc(">>", &VM::IonCalcOp, Operator::Shr);
+  BindExtFunc("&&", &VM::IonCalcOp, Operator::LogicAnd);
+  BindExtFunc("||", &VM::IonCalcOp, Operator::LogicOr);
+  BindExtFunc("!", &VM::IonCalcOp, Operator::LogicNot);
+}
+
 const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
   auto cur_env = envs_.top();
   // recursively find value in environments
@@ -43,6 +71,109 @@ const char *VM::GetEnvValue(VMInst *inst, VMValue &value) {
   assert(inst->opr != 0);
   auto str = sym_table_[inst->opr - 1].c_str();
   return str;
+}
+
+bool VM::IonPrint(ValueStack &vals, VMValue &ret) {
+  if (vals.size() < 1) return false;
+  const auto &v = vals.top();
+  if (v.env) {
+    std::cout << "<function at: ";
+    std::cout << std::hex << v.value << ">" << std::endl;
+  }
+  else {
+    std::cout << std::dec << v.value << std::endl;
+  }
+  ret = v;
+  vals.pop();
+  return true;
+}
+
+bool VM::IonInput(ValueStack &vals, VMValue &ret) {
+  std::cin >> ret.value;
+  ret.env = nullptr;
+  return true;
+}
+
+// TODO
+bool VM::IonIf(ValueStack &vals, VMValue &ret) {
+  if (vals.size() < 3) return false;
+  // fetch condition
+  if (vals.top().env) return false;
+  auto cond = vals.top().value != 0;
+  vals.pop();
+  // fetch true function
+  if (!vals.top().env) return false;
+  auto then = vals.top();
+  vals.pop();
+  // fetch false function
+  if (!vals.top().env) return false;
+  auto else_then = vals.top();
+  vals.pop();
+  // jump to corresponding function
+  // TODO
+  // return to VM
+  ret.value = 0;
+  ret.env = nullptr;
+  return true;
+}
+
+bool VM::IonIs(ValueStack &vals, VMValue &ret) {
+  if (vals.size() < 2) return false;
+  // fetch arguments
+  auto lhs = vals.top();
+  vals.pop();
+  auto rhs = vals.top();
+  vals.pop();
+  // check if lhs and rhs are same
+  if ((lhs.env && rhs.env) || (!lhs.env && !rhs.env)) {
+    ret.value = lhs.value == rhs.value;
+  }
+  else {
+    ret.value = 0;
+  }
+  ret.env = nullptr;
+  return true;
+}
+
+bool VM::IonCalcOp(ValueStack &vals, VMValue &ret, Operator op) {
+  std::int32_t lhs, rhs;
+  // fetch lhs
+  if (vals.top().env) return false;
+  lhs = vals.top().value;
+  vals.pop();
+  // fetch rhs
+  if (op != Operator::Not && op != Operator::LogicNot) {
+    if (vals.top().env) return false;
+    rhs = vals.top().value;
+    vals.pop();
+  }
+  // calculate
+  switch (op) {
+    case Operator::Equal: ret.value = lhs == rhs;
+    case Operator::NotEqual: ret.value = lhs != rhs;
+    case Operator::Less: ret.value = lhs < rhs;
+    case Operator::LessEqual: ret.value = lhs <= rhs;
+    case Operator::Great: ret.value = lhs > rhs;
+    case Operator::GreatEqual: ret.value = lhs >= rhs;
+    case Operator::Add: ret.value = lhs + rhs;
+    case Operator::Sub: ret.value = lhs - rhs;
+    case Operator::Mul: ret.value = lhs * rhs;
+    case Operator::Div: ret.value = lhs / rhs;
+    case Operator::Mod: ret.value = lhs % rhs;
+    case Operator::And: ret.value = lhs & rhs;
+    case Operator::Or: ret.value = lhs | rhs;
+    case Operator::Not: ret.value = ~lhs;
+    case Operator::Xor: ret.value = lhs ^ rhs;
+    case Operator::Shl: ret.value = lhs << rhs;
+    case Operator::Shr: ret.value = lhs >> rhs;
+    case Operator::LogicAnd: ret.value = lhs && rhs;
+    case Operator::LogicOr: ret.value = lhs || rhs;
+    case Operator::LogicNot: ret.value = !lhs;
+    default: assert(false);
+  }
+  // return to VM
+  ret.env = nullptr;
+  return true;
 }
 
 bool VM::LoadProgram(const std::string &file) {
@@ -124,17 +255,11 @@ const VMValue *VM::GetValueFromEnv(const VMEnvPtr &env,
 void VM::Reset() {
   pc_ = 0;
   val_reg_ = {0, nullptr};
+  // clear stacks
+  while (!vals_.empty()) vals_.pop();
   while (!envs_.empty()) envs_.pop();
-  // create root environment if not exists
-  if (!root_) {
-    root_ = MakeVMEnv();
-  }
-  else {
-    // reset root environment
-    root_->outer = nullptr;
-    root_->ret_pc = 0;
-    root_->slot.clear();
-  }
+  // create root environment
+  root_ = MakeVMEnv();
   envs_.push(root_);
 }
 
@@ -211,7 +336,9 @@ bool VM::Run() {
       if (it != ext_funcs_.end()) {
         // calling an external function
         envs_.top()->outer = nullptr;
-        val_reg_ = it->second(envs_.top());
+        if (!it->second(vals_, val_reg_)) {
+          return PrintError("invalid function call");
+        }
         envs_.pop();
         VM_NEXT(4);
       }
@@ -240,7 +367,9 @@ bool VM::Run() {
         envs_.pop();
         envs_.top()->outer = nullptr;
         envs_.top()->slot = slot;
-        val_reg_ = it->second(envs_.top());
+        if (!it->second(vals_, val_reg_)) {
+          return PrintError("invalid function call");
+        }
         // return from tail call
         pc_ = envs_.top()->ret_pc;
         envs_.pop();
