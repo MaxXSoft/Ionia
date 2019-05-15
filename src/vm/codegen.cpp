@@ -250,12 +250,16 @@ void VMCodeGen::CNSH(std::uint32_t num) {
   PushInst({InstOp::CNSH, num});
 }
 
-void VMCodeGen::RET() {
-  PushInst(InstOp::RET);
+void VMCodeGen::PUSH(const std::string &name) {
+  PushInst({InstOp::PUSH, GetSymbolIndex(name)});
 }
 
-void VMCodeGen::CENV() {
-  PushInst(InstOp::CENV);
+void VMCodeGen::POP(const std::string &name) {
+  PushInst({InstOp::POP, GetSymbolIndex(name)});
+}
+
+void VMCodeGen::RET() {
+  PushInst(InstOp::RET);
 }
 
 void VMCodeGen::CALL(const std::string &name) {

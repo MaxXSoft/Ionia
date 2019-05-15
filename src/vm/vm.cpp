@@ -298,6 +298,29 @@ bool VM::Run() {
     VM_NEXT(4);
   }
 
+  // push slot value into value stack
+  VM_LABEL(PUSH) {
+    if (auto str = GetEnvValue(inst, opr)) {
+      return PrintError("not found", str);
+    }
+    else {
+      vals_.push(opr);
+      VM_NEXT(4);
+    }
+  }
+
+  // pop value in value stack to slot
+  VM_LABEL(POP) {
+    if (vals_.empty()) {
+      return PrintError("pop from empty stack");
+    }
+    else {
+      envs_.top()->slot[inst->opr] = vals_.top();
+      vals_.pop();
+      VM_NEXT(4);
+    }
+  }
+
   // return from function
   VM_LABEL(RET) {
     if (envs_.size() > 1) {
@@ -309,12 +332,6 @@ bool VM::Run() {
       return true;
     }
     VM_NEXT(0);
-  }
-
-  // create new environment and switch
-  VM_LABEL(CENV) {
-    envs_.push(MakeVMEnv(envs_.top()));
-    VM_NEXT(1);
   }
 
   // call function and modify outer environment

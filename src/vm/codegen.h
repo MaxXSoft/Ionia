@@ -71,8 +71,9 @@ class VMCodeGen {
   void CNST(std::uint32_t num);
   void CNST(const std::string &label);
   void CNSH(std::uint32_t num);
+  void PUSH(const std::string &name);
+  void POP(const std::string &name);
   void RET();
-  void CENV();
   void CALL(const std::string &name);
   void TCAL(const std::string &name);
 

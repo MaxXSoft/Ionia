@@ -9,9 +9,9 @@
 #include <cstdint>
 
 // all supported instructions of Ionia VM
-#define VM_INST_ALL(f)                      \
-  f(GET) f(SET) f(FUN) f(CNST) f(CNSH)      \
-  f(RET) f(CENV) f(CALL) f(TCAL)
+#define VM_INST_ALL(f)                  \
+  f(GET) f(SET) f(FUN) f(CNST) f(CNSH)  \
+  f(PUSH) f(POP) f(RET) f(CALL) f(TCAL)
 // expand macro to comma-separated list
 #define VM_EXPAND_LIST(i)         i,
 // expand macro to label list
