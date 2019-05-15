@@ -157,9 +157,8 @@ bool VM::IonIf(ValueStack &vals, VMValue &ret) {
   // fetch false part
   auto else_then = vals.top();
   vals.pop();
-  // just return target value, let VM do the rest
-  ret = cond ? then : else_then;
-  return true;
+  // tail call corresponding part
+  return DoTailCall(cond ? then : else_then);
 }
 
 bool VM::IonIs(ValueStack &vals, VMValue &ret) {
