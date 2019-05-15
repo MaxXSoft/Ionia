@@ -239,6 +239,8 @@ bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
   auto pos = VMCodeGen::ParseBytecode(buffer, sym_table_, pc_table_,
                                       global_funcs_);
   if (pos < 0) return false;
+  // reset ext environment
+  ext_ = MakeVMEnv();
   // copy bytecode segment
   rom_.reserve(buffer.size() - pos);
   for (int i = pos; i < buffer.size(); ++i) {
@@ -247,8 +249,26 @@ bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
   return true;
 }
 
-void VM::RegisterFunction(const std::string &name, ExtFunc func) {
-  ext_funcs_.insert({name, func});
+bool VM::RegisterFunction(const std::string &name, ExtFunc func) {
+  VMValue ret;
+  return RegisterFunction(name, func, ret);
+}
+
+bool VM::RegisterFunction(const std::string &name, ExtFunc func,
+                          VMValue &ret) {
+  for (std::size_t i = 0; i < sym_table_.size(); ++i) {
+    if (sym_table_[i] == name) {
+      // get new function pc id
+      auto pc_id = pc_table_.size() + ext_funcs_.size();
+      // add func to external function table
+      ext_funcs_.insert({pc_id, func});
+      // add func to ext environment
+      ret = MakeVMValue(pc_id, ext_);
+      ext_->slot.insert({i, ret});
+      return true;
+    }
+  }
+  return false;
 }
 
 bool VM::CallFunction(const std::string &name,
@@ -286,7 +306,7 @@ void VM::Reset() {
   while (!vals_.empty()) vals_.pop();
   while (!envs_.empty()) envs_.pop();
   // create root environment
-  root_ = MakeVMEnv();
+  root_ = MakeVMEnv(ext_);
   envs_.push(root_);
 }
 

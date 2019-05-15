@@ -25,12 +25,16 @@ class VM {
   bool LoadProgram(const std::vector<std::uint8_t> &buffer);
 
   // register an external function
-  void RegisterFunction(const std::string &name, ExtFunc func);
+  bool RegisterFunction(const std::string &name, ExtFunc func);
+  // register an external function
+  // if success, return function value
+  bool RegisterFunction(const std::string &name, ExtFunc func,
+                        VMValue &ret);
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
                     const std::vector<VMValue> &args, VMValue &ret);
 
-  // reset VM's status (except symbol table, GFT and EFT)
+  // reset VM's status (except symbol table, FPT, GFT and EFT)
   void Reset();
   // run current program
   bool Run();
@@ -75,7 +79,7 @@ class VM {
   VMValue val_reg_;
   std::stack<VMValue> vals_;
   std::stack<VMEnvPtr> envs_;
-  VMEnvPtr root_;
+  VMEnvPtr root_, ext_;
   // tables
   VMSymbolTable sym_table_;
   VMFuncPCTable pc_table_;

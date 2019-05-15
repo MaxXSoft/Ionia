@@ -7,6 +7,7 @@
 #include <string>
 #include <functional>
 #include <cstdint>
+#include <cassert>
 
 // all supported instructions of Ionia VM
 #define VM_INST_ALL(f)                  \
@@ -73,6 +74,12 @@ inline VMEnvPtr MakeVMEnv(const VMEnvPtr &outer) {
 // make new VM integer value
 inline VMValue MakeVMValue(std::int32_t value) {
   return {value, nullptr};
+}
+
+// make new VM function value
+inline VMValue MakeVMValue(std::int32_t pc_id, const VMEnvPtr &env) {
+  assert(env != nullptr);
+  return {pc_id, env};
 }
 
 #endif  // IONIA_VM_DEFINE_H_
