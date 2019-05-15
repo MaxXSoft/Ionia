@@ -107,48 +107,18 @@ void VMCodeGen::PushInst(VMInst::OpCode op) {
   inst_buf_.push_back(*IntPtrCast<8>(&op));
 }
 
-void VMCodeGen::PushLabelInst(VMInst::OpCode op,
-                              const std::string &label) {
+std::uint32_t VMCodeGen::GetFuncId(const std::string &label) {
   // try to find in named labels
-  auto it = named_labels_.find(label);
-  if (it != named_labels_.end()) {
-    PushInst({op, it->second});
-    return;
-  }
-  // if label not found
-  PushInst({op, 0});
-  auto offset = pc() - 4;
-  // create or modify record of unfilled map
-  auto unfilled_it = unfilled_named_.find(label);
-  if (unfilled_it == unfilled_named_.end()) {
-    unfilled_named_.insert({label, {offset}});
-  }
-  else {
-    unfilled_it->second.push_front(offset);
-  }
-}
-
-void VMCodeGen::FillNamedLabels() {
-  for (const auto &it : unfilled_named_) {
-    // get instruction list
-    const auto &insts = it.second;
-    // get label offset
-    auto label_it = named_labels_.find(it.first);
-    assert(label_it != named_labels_.end());
-    auto offset = label_it->second;
-    // fill all instructions
-    for (const auto &i : insts) {
-      auto inst = PtrCast<VMInst>(inst_buf_.data() + i);
-      inst->opr = offset;
-    }
-  }
-  unfilled_named_.clear();
+  auto it = labels_.find(label);
+  if (it != labels_.end()) return it->second;
+  // add label to unfilled map
+  pc_table_.push_back(0);
+  unfilled_.insert({label, pc_table_.size() - 1});
 }
 
 std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
   std::ostringstream content;
-  // fill all of named labels
-  FillNamedLabels();
+  assert(unfilled_.empty());
   // generate file header
   content.write(PtrCast<char>(&kFileHeader), sizeof(kFileHeader));
   // generate symbol table
@@ -224,10 +194,6 @@ void VMCodeGen::CNST(std::uint32_t num) {
   PushInst({InstOp::CNST, num});
 }
 
-void VMCodeGen::CNST(const std::string &label) {
-  PushLabelInst(InstOp::CNST, label);
-}
-
 void VMCodeGen::CNSH(std::uint32_t num) {
   PushInst({InstOp::CNSH, num});
 }
@@ -253,12 +219,24 @@ void VMCodeGen::TCAL(const std::string &name) {
 }
 
 void VMCodeGen::LABEL(const std::string &label) {
-  assert(named_labels_.find(label) == named_labels_.end());
-  named_labels_[label] = pc();
+  assert(labels_.find(label) == labels_.end());
+  // check if label is unfilled
+  auto it = unfilled_.find(label);
+  if (it != unfilled_.end()) {
+    // fill function pc
+    pc_table_[it->second] = pc();
+    labels_[label] = it->second;
+    unfilled_.erase(it);
+  }
+  else {
+    // create new function pc
+    pc_table_.push_back(pc());
+    labels_[label] = pc_table_.size() - 1;
+  }
 }
 
 void VMCodeGen::DefineFunction(const std::string &name) {
-  CNST(name);
+  SetConst(GetFuncId(name));
   FUN();
   SET(name);
 }

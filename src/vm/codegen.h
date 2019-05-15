@@ -31,7 +31,6 @@ class VMCodeGen {
   void SET(const std::string &name);
   void FUN();
   void CNST(std::uint32_t num);
-  void CNST(const std::string &label);
   void CNSH(std::uint32_t num);
   void PUSH(const std::string &name);
   void POP(const std::string &name);
@@ -59,15 +58,10 @@ class VMCodeGen {
   // minimum bytecode file size
   static const std::uint32_t kMinFileSize = 4 * 4;
 
-  friend class VMCodeLabel;
-
-  using OffsetList = std::forward_list<std::uint32_t>;
-
   std::uint32_t GetSymbolIndex(const std::string &name);
   void PushInst(const VMInst &inst);
   void PushInst(VMInst::OpCode op);
-  void PushLabelInst(VMInst::OpCode op, const std::string &label);
-  void FillNamedLabels();
+  std::uint32_t GetFuncId(const std::string &label);
 
   // tables
   VMSymbolTable sym_table_;
@@ -75,10 +69,8 @@ class VMCodeGen {
   std::map<std::uint32_t, VMGlobalFunc> global_funcs_;
   // buffer that stores instructions
   std::vector<std::uint8_t> inst_buf_;
-  // map of named labels
-  std::map<std::string, std::uint32_t> named_labels_;
-  // map of unfilled insturctions
-  std::map<std::string, OffsetList> unfilled_named_;
+  // map of labels
+  std::map<std::string, std::uint32_t> labels_, unfilled_;
 };
 
 #endif  // IONIA_VM_BYTECODE_H_
