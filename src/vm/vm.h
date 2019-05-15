@@ -16,10 +16,7 @@ class VM {
   // definition of external function
   using ExtFunc = std::function<bool(ValueStack &, VMValue &)>;
 
-  VM() {
-    InitExtFuncs();
-    Reset();
-  }
+  VM() { Reset(); }
 
   bool LoadProgram(const std::string &file);
   bool LoadProgram(const std::vector<std::uint8_t> &buffer);

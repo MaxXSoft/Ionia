@@ -27,7 +27,9 @@ bool PrintError(const char *message, const char *symbol) {
 }  // namespace
 
 void VM::InitExtFuncs() {
-  // set up external functions
+  // reset ext environment
+  ext_ = MakeVMEnv();
+  // try to set up all Ionia standard functions
   BindExtFunc("<<<", &VM::IonPrint);
   BindExtFunc(">>>", &VM::IonInput);
   BindExtFunc("?", &VM::IonIf);
@@ -238,13 +240,13 @@ bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
   auto pos = VMCodeGen::ParseBytecode(buffer, sym_table_, pc_table_,
                                       global_funcs_);
   if (pos < 0) return false;
-  // reset ext environment
-  ext_ = MakeVMEnv();
   // copy bytecode segment
   rom_.reserve(buffer.size() - pos);
   for (int i = pos; i < buffer.size(); ++i) {
     rom_.push_back(buffer[i]);
   }
+  // set up external functions (Ionia standard functions)
+  InitExtFuncs();
   return true;
 }
 
