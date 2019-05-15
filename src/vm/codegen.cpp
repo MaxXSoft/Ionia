@@ -48,6 +48,7 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
   auto fpt_len = IntPtrCast<32>(buffer.data() + pos);
   pos += 4;
   // read function pc table
+  pc_table.clear();
   for (std::size_t i = 0; i < *fpt_len; i += 4) {
     auto func_pc = IntPtrCast<32>(buffer.data() + pos + i);
     pc_table.push_back(*func_pc);
