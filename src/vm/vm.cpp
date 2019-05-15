@@ -326,22 +326,22 @@ bool VM::Run() {
     if (envs_.size() > 1) {
       pc_ = envs_.top()->ret_pc;
       envs_.pop();
+      VM_NEXT(0);
     }
     else {
       // return from root environment, exit from VM
       return true;
     }
-    VM_NEXT(0);
   }
 
-  // call function and modify outer environment
+  // call function and create new environment
   VM_LABEL(CALL) {
     // get function object
     if (auto str = GetEnvValue(inst, opr)) {
       auto it = ext_funcs_.find(str);
       if (it != ext_funcs_.end()) {
         // calling an external function
-        envs_.top()->outer = nullptr;
+        envs_.push(MakeVMEnv());
         if (!it->second(vals_, val_reg_)) {
           return PrintError("invalid function call");
         }
@@ -356,7 +356,7 @@ bool VM::Run() {
     // check if is not a function
     if (!opr.env) return PrintError("calling a non-function");
     // set up environment
-    envs_.top()->outer = opr.env;
+    envs_.push(MakeVMEnv(opr.env));
     envs_.top()->ret_pc = pc_ + 4;
     pc_ = opr.value;
     VM_NEXT(0);
@@ -369,10 +369,7 @@ bool VM::Run() {
       auto it = ext_funcs_.find(str);
       if (it != ext_funcs_.end()) {
         // calling an external function
-        slot = envs_.top()->slot;
-        envs_.pop();
         envs_.top()->outer = nullptr;
-        envs_.top()->slot = slot;
         if (!it->second(vals_, val_reg_)) {
           return PrintError("invalid function call");
         }
@@ -389,10 +386,7 @@ bool VM::Run() {
     // check if is not a function
     if (!opr.env) return PrintError("calling a non-function");
     // set up environment
-    slot = envs_.top()->slot;
-    envs_.pop();
     envs_.top()->outer = opr.env;
-    envs_.top()->slot = slot;
     pc_ = opr.value;
     VM_NEXT(0);
   }
