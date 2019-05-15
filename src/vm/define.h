@@ -51,7 +51,7 @@ struct VMEnv {
 };
 
 struct VMGlobalFunc {
-  std::uint32_t func_pc;
+  std::uint32_t pc_id;
   std::vector<std::uint32_t> args;
 };
 

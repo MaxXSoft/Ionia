@@ -64,7 +64,7 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
     auto func_id = IntPtrCast<32>(buffer.data() + pos + i);
     i += 4;
     // read function pc
-    glob_func.func_pc = *IntPtrCast<32>(buffer.data() + pos + i);
+    glob_func.pc_id = *IntPtrCast<32>(buffer.data() + pos + i);
     i += 4;
     // read argument count
     auto arg_count = buffer[pos + i];
@@ -113,7 +113,9 @@ std::uint32_t VMCodeGen::GetFuncId(const std::string &label) {
   if (it != labels_.end()) return it->second;
   // add label to unfilled map
   pc_table_.push_back(0);
-  unfilled_.insert({label, pc_table_.size() - 1});
+  auto pc_id = pc_table_.size() - 1;
+  unfilled_.insert({label, pc_id});
+  return pc_id;
 }
 
 std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
@@ -149,8 +151,8 @@ std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
     content.write(PtrCast<char>(&it.first), sizeof(it.first));
     gft_len += sizeof(it.first);
     // write function pc
-    content.write(PtrCast<char>(&func.func_pc), sizeof(func.func_pc));
-    gft_len += sizeof(func.func_pc);
+    content.write(PtrCast<char>(&func.pc_id), sizeof(func.pc_id));
+    gft_len += sizeof(func.pc_id);
     // write argument count
     std::uint8_t argc = func.args.size();
     content.write(PtrCast<char>(&argc), sizeof(argc));
@@ -257,7 +259,9 @@ void VMCodeGen::RegisterGlobalFunction(
   assert(global_funcs_.find(func_id) == global_funcs_.end());
   // initialize global func structure
   VMGlobalFunc func;
-  func.func_pc = pc();
+  // get function pc id
+  func.pc_id = GetFuncId(name);
+  // get argument id list
   for (const auto &i : args) {
     auto arg_id = GetSymbolIndex(i);
     func.args.push_back(arg_id);
