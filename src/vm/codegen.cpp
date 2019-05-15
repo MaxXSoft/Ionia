@@ -17,25 +17,6 @@ using InstOp = VMInst::OpCode;
 const std::uint32_t VMCodeGen::kFileHeader;
 const std::uint32_t VMCodeGen::kMinFileSize;
 
-void VMCodeLabel::FillLabel() {
-  if (!gen_) return;
-  // get unfilled instructions
-  auto it = gen_->unfilled_anon_.find(this);
-  assert(it != gen_->unfilled_anon_.end());
-  // traversal all instructions and fill label info
-  for (const auto &i : it->second) {
-    auto inst = PtrCast<VMInst>(gen_->inst_buf_.data() + i);
-    inst->opr = offset_;
-  }
-  // erase record
-  gen_->unfilled_anon_.erase(it);
-}
-
-void VMCodeLabel::SetLabel() {
-  if (!gen_) return;
-  offset_ = gen_->pc();
-}
-
 int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
                              VMSymbolTable &sym_table,
                              VMFuncPCTable &pc_table,
@@ -144,20 +125,6 @@ void VMCodeGen::PushLabelInst(VMInst::OpCode op,
   }
   else {
     unfilled_it->second.push_front(offset);
-  }
-}
-
-void VMCodeGen::PushLabelInst(VMInst::OpCode op,
-                              const VMCodeLabel &label) {
-  PushInst({op, 0});
-  auto offset = pc() - 4;
-  // create or modify record of unfilled map
-  auto it = unfilled_anon_.find(&label);
-  if (it == unfilled_anon_.end()) {
-    unfilled_anon_.insert({&label, {offset}});
-  }
-  else {
-    it->second.push_front(offset);
   }
 }
 
@@ -288,10 +255,6 @@ void VMCodeGen::TCAL(const std::string &name) {
 void VMCodeGen::LABEL(const std::string &label) {
   assert(named_labels_.find(label) == named_labels_.end());
   named_labels_[label] = pc();
-}
-
-VMCodeLabel VMCodeGen::NewLabel() {
-  return VMCodeLabel(this, pc());
 }
 
 void VMCodeGen::DefineFunction(const std::string &name) {

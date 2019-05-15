@@ -9,45 +9,6 @@
 
 #include "vm/define.h"
 
-// forward declaration of VMCodeGen
-class VMCodeGen;
-
-// helper class of VMCodeGen
-class VMCodeLabel {
-public:
-  VMCodeLabel() = delete;
-  VMCodeLabel(const VMCodeLabel &) = delete;
-  VMCodeLabel(VMCodeLabel &&label) noexcept
-      : gen_(label.gen_), offset_(label.offset_) {
-    label.gen_ = nullptr;
-  }
-  ~VMCodeLabel() { FillLabel(); }
-
-  VMCodeLabel &operator=(const VMCodeLabel &) = delete;
-  VMCodeLabel &operator=(VMCodeLabel &&label) noexcept {
-    if (&label != this) {
-      FillLabel();
-      gen_ = label.gen_;
-      offset_ = label.offset_;
-      label.gen_ = nullptr;
-    }
-    return label;
-  }
-
-  void SetLabel();
-
-private:
-  friend class VMCodeGen;
-
-  VMCodeLabel(VMCodeGen *gen, std::uint32_t offset)
-      : gen_(gen), offset_(offset) {}
-
-  void FillLabel();
-
-  VMCodeGen *gen_;
-  std::uint32_t offset_;
-};
-
 // code generator of Ionia VM
 class VMCodeGen {
  public:
@@ -80,8 +41,6 @@ class VMCodeGen {
 
   // create a new named label
   void LABEL(const std::string &label);
-  // create a new anonymous label
-  VMCodeLabel NewLabel();
 
   // define function (pseudo instruction)
   void DefineFunction(const std::string &name);
@@ -108,7 +67,6 @@ class VMCodeGen {
   void PushInst(const VMInst &inst);
   void PushInst(VMInst::OpCode op);
   void PushLabelInst(VMInst::OpCode op, const std::string &label);
-  void PushLabelInst(VMInst::OpCode op, const VMCodeLabel &label);
   void FillNamedLabels();
 
   // tables
@@ -120,7 +78,6 @@ class VMCodeGen {
   // map of named labels
   std::map<std::string, std::uint32_t> named_labels_;
   // map of unfilled insturctions
-  std::map<const VMCodeLabel *, OffsetList> unfilled_anon_;
   std::map<std::string, OffsetList> unfilled_named_;
 };
 
