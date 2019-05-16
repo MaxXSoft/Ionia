@@ -50,7 +50,7 @@ class VMCodeGen {
   void SetConst(std::int32_t num);
   // register new global function
   void RegisterGlobalFunction(const std::string &name,
-                              const std::vector<std::string> &args);
+                              std::uint8_t arg_count);
 
   // get current pc
   std::uint32_t pc() const { return inst_buf_.size(); }
@@ -60,6 +60,8 @@ class VMCodeGen {
   static const std::uint32_t kFileHeader = 0xec17dbba;
   // minimum bytecode file size
   static const std::uint32_t kMinFileSize = 4 * 4;
+  // size of global function table item
+  static const std::uint32_t kGFTItemSize = 4 + 4 + 1;
 
   std::uint32_t GetSymbolIndex(const std::string &name);
   void PushInst(const VMInst &inst);

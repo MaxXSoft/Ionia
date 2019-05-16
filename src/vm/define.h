@@ -54,7 +54,7 @@ struct VMEnv {
 
 struct VMGlobalFunc {
   std::uint32_t pc_id;
-  std::vector<std::uint32_t> args;
+  std::uint8_t arg_count;
 };
 
 // definition of tables

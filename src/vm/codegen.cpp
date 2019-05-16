@@ -16,6 +16,7 @@ using InstOp = VMInst::OpCode;
 // definitions of static member variables
 const std::uint32_t VMCodeGen::kFileHeader;
 const std::uint32_t VMCodeGen::kMinFileSize;
+const std::uint32_t VMCodeGen::kGFTItemSize;
 
 int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
                              VMSymbolTable &sym_table,
@@ -68,17 +69,10 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
     glob_func.pc_id = *IntPtrCast<32>(buffer.data() + pos + i);
     i += 4;
     // read argument count
-    auto arg_count = buffer[pos + i];
+    glob_func.arg_count = buffer[pos + i];
     i += 1;
-    // read argument id
-    for (std::size_t j = 0; j < arg_count; ++j) {
-      glob_func.args.push_back(*IntPtrCast<32>(buffer.data() + pos + i));
-      i += 4;
-    }
     // insert to table
     global_funcs.insert({sym_table[*func_id], glob_func});
-    // reset
-    glob_func.args.clear();
   }
   pos += *global_len;
   // return position
@@ -150,8 +144,7 @@ std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
     content.write(PtrCast<char>(&i), sizeof(i));
   }
   // generate global function table
-  std::uint32_t gft_len = 0;
-  len_pos = content.tellp();
+  std::uint32_t gft_len = global_funcs_.size() * kGFTItemSize;
   content.write(PtrCast<char>(&gft_len), sizeof(gft_len));
   for (const auto &it : global_funcs_) {
     const auto &func = it.second;
@@ -162,19 +155,9 @@ std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
     content.write(PtrCast<char>(&func.pc_id), sizeof(func.pc_id));
     gft_len += sizeof(func.pc_id);
     // write argument count
-    std::uint8_t argc = func.args.size();
-    content.write(PtrCast<char>(&argc), sizeof(argc));
-    gft_len += sizeof(argc);
-    // write argument id
-    for (const auto &i : func.args) {
-      content.write(PtrCast<char>(&i), sizeof(i));
-      gft_len += sizeof(i);
-    }
+    content.write(PtrCast<char>(&func.arg_count), sizeof(func.arg_count));
+    gft_len += sizeof(func.arg_count);
   }
-  // update global function table length
-  content.seekp(len_pos);
-  content.write(PtrCast<char>(&gft_len), sizeof(gft_len));
-  content.seekp(0, std::ios::end);
   // write instructions
   content.write(PtrCast<char>(inst_buf_.data()), inst_buf_.size());
   // generate byte array
@@ -267,8 +250,8 @@ void VMCodeGen::SetConst(std::int32_t num) {
   }
 }
 
-void VMCodeGen::RegisterGlobalFunction(
-    const std::string &name, const std::vector<std::string> &args) {
+void VMCodeGen::RegisterGlobalFunction(const std::string &name,
+                                       std::uint8_t arg_count) {
   // get function id
   assert(!name.empty() && name[0] == '$');
   auto func_id = GetSymbolIndex(name);
@@ -277,11 +260,8 @@ void VMCodeGen::RegisterGlobalFunction(
   VMGlobalFunc func;
   // get function pc id
   func.pc_id = GetFuncId(name);
-  // get argument id list
-  for (const auto &i : args) {
-    auto arg_id = GetSymbolIndex(i);
-    func.args.push_back(arg_id);
-  }
+  // get argument count
+  func.arg_count = arg_count;
   // insert into table
   global_funcs_.insert({func_id, func});
 }

@@ -283,9 +283,9 @@ bool VM::CallFunction(const std::string &name,
   // set up new environment
   auto env = MakeVMEnv(root_);
   // set up arguments
-  if (args.size() != func.args.size()) return false;
-  for (int i = 0; i < args.size(); ++i) {
-    env->slot.insert({func.args[i], args[i]});
+  if (args.size() != func.arg_count) return false;
+  for (auto it = args.rbegin(); it != args.rend(); ++it) {
+    vals_.push(*it);
   }
   // backup environment stack and reset
   // since VM will automatically stop when executing RET instruction
