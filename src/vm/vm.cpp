@@ -422,6 +422,8 @@ bool VM::Run() {
     // get function object
     if (!GetEnvValue(inst, opr)) return false;
     if (!DoTailCall(opr)) return false;
+    // return from root environment, exit from VM
+    if (envs_.size() <= 1) return true;
     VM_NEXT(0);
   }
 
