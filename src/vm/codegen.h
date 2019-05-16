@@ -12,6 +12,7 @@
 // code generator of Ionia VM
 class VMCodeGen {
  public:
+  VMCodeGen() { Reset(); }
   virtual ~VMCodeGen() = default;
 
   // Function returns start position of bytecode segment.
@@ -50,12 +51,11 @@ class VMCodeGen {
   void DefineFunction(const std::string &name);
   // set constant value (pseudo instruction)
   void SetConst(std::int32_t num);
+  // automatic generate RET or TCAL instruction (pseudo instruction)
+  void GenReturn();
   // register new global function
   void RegisterGlobalFunction(const std::string &name,
                               std::uint8_t arg_count);
-
-  // get current pc
-  std::uint32_t pc() const { return inst_buf_.size(); }
 
  private:
   // file header of Ionia VM's bytecode file (bad bite c -> bad byte code)
@@ -76,6 +76,7 @@ class VMCodeGen {
   std::map<std::uint32_t, VMGlobalFunc> global_funcs_;
   // buffer that stores instructions
   std::vector<std::uint8_t> inst_buf_;
+  VMInst::OpCode last_op_;
   // map of labels
   std::map<std::string, std::uint32_t> labels_, unfilled_;
 };

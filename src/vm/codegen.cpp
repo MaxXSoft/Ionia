@@ -96,10 +96,12 @@ void VMCodeGen::PushInst(const VMInst &inst) {
   inst_buf_.push_back(ptr[1]);
   inst_buf_.push_back(ptr[2]);
   inst_buf_.push_back(ptr[3]);
+  last_op_ = inst.opcode;
 }
 
 void VMCodeGen::PushInst(VMInst::OpCode op) {
   inst_buf_.push_back(*IntPtrCast<8>(&op));
+  last_op_ = op;
 }
 
 std::uint32_t VMCodeGen::GetFuncId(const std::string &label) {
@@ -178,6 +180,7 @@ void VMCodeGen::Reset() {
   inst_buf_.clear();
   labels_.clear();
   unfilled_.clear();
+  last_op_ = static_cast<InstOp>(0);
 }
 
 void VMCodeGen::GET(const std::string &name) {
@@ -230,13 +233,13 @@ void VMCodeGen::LABEL(const std::string &label) {
   auto it = unfilled_.find(label);
   if (it != unfilled_.end()) {
     // fill function pc
-    pc_table_[it->second] = pc();
+    pc_table_[it->second] = inst_buf_.size();
     labels_[label] = it->second;
     unfilled_.erase(it);
   }
   else {
     // create new function pc
-    pc_table_.push_back(pc());
+    pc_table_.push_back(inst_buf_.size());
     labels_[label] = pc_table_.size() - 1;
   }
 }
@@ -256,6 +259,18 @@ void VMCodeGen::SetConst(std::int32_t num) {
   auto hi = num & ~VM_INST_IMM_MASK;
   if (hi && hi != ~VM_INST_IMM_MASK) {
     CNSH((num & ~VM_INST_IMM_MASK) >> VM_INST_OPCODE_WIDTH);
+  }
+}
+
+void VMCodeGen::GenReturn() {
+  if (last_op_ == InstOp::CALL) {
+    // modify opcode to TCAL
+    auto inst = PtrCast<VMInst>(inst_buf_.data() + inst_buf_.size() - 4);
+    last_op_ = inst->opcode = InstOp::TCAL;
+  }
+  else {
+    // just generate RET
+    RET();
   }
 }
 
