@@ -47,7 +47,7 @@ class ArgParser {
 
   // get parsed value
   template <typename T>
-  const T &GetValue(const std::string &name) {
+  T GetValue(const std::string &name) {
     return std::any_cast<T>(vals_[name]);
   }
 
