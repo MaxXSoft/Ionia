@@ -56,6 +56,7 @@ class ArgParser {
   // print help message
   void PrintHelp();
 
+  // setter
   void set_program_name(const char *program_name) {
     program_name_ = program_name;
     auto pos = program_name_.rfind('/');
@@ -63,6 +64,9 @@ class ArgParser {
       program_name_ = program_name_.substr(pos + 1);
     }
   }
+
+  // getter
+  const std::string &program_name() const { return program_name_; }
 
  private:
   // default padding width of argument description info
@@ -76,9 +80,6 @@ class ArgParser {
     std::string help_msg;
   };
 
-  // print error message
-  bool LogError(const char *message);
-  bool LogError(const char *message, const std::string &name);
   // assert argument/option name is valid
   void CheckArgName(const std::string &name);
   // assert argument/option type is valid

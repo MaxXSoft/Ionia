@@ -31,18 +31,6 @@ inline bool ReadValue(const char *str, std::any &value) {
 
 }  // namespace
 
-bool ArgParser::LogError(const char *message) {
-  std::cerr << "[" << program_name_ << ".ArgParser] ERROR: ";
-  std::cerr << message << std::endl;
-  return false;
-}
-
-bool ArgParser::LogError(const char *message, const std::string &name) {
-  std::cerr << "[" << program_name_ << ".ArgParser] ERROR: ";
-  std::cerr << message << " '" << name << "'" << std::endl;
-  return false;
-}
-
 void ArgParser::CheckArgName(const std::string &name) {
   // regular expression: ([A-Za-z0-9]|_|-)+
   assert(!name.empty());
@@ -64,43 +52,32 @@ bool ArgParser::ReadArgValue(const char *arg, std::any &value) {
 bool ArgParser::Parse(int argc, const char *argv[]) {
   // update program name
   set_program_name(argv[0]);
-  // check if need to print help info
-  if (argc == 1 && (!args_.empty() || !opts_.empty())) {
-    PrintHelp();
-    return false;
-  }
-  int i;
-  // insufficient argument count
-  if (args_.size() > argc - 1) {
-    return LogError("arguments required");
-  }
+  int arg_ofs = 0;
   // parse argument list
-  for (i = 0; i < args_.size(); ++i) {
-    if (argv[i + 1][0] == '-' ||
-        !ReadArgValue(argv[i + 1], vals_[args_[i].name])) {
-      return LogError("invalid argument", args_[i].name);
-    }
-  }
-  // parse option list
-  for (++i; i < argc; ++i) {
-    // find option info
-    auto it = opt_map_.find(argv[i]);
-    if (it == opt_map_.end()) return LogError("invalid option");
-    const auto &info = opts_[it->second];
-    auto &val = vals_[info.name];
-    // fill value
-    if (val.type() == typeid(bool)) {
-      val = true;
-    }
-    else {
-      // read argument of option
-      ++i;
-      if (argv[i][0] == '-' || !ReadArgValue(argv[i], val)) {
-        return LogError("invalid option", argv[i - 1]);
+  for (int i = 1; i < argc; ++i) {
+    if (argv[i][0] == '-') {
+      // find option info
+      auto it = opt_map_.find(argv[i]);
+      if (it == opt_map_.end()) return false;
+      const auto &info = opts_[it->second];
+      auto &val = vals_[info.name];
+      // fill value
+      if (val.type() == typeid(bool)) {
+        val = true;
+      }
+      else {
+        // read argument of option
+        ++i;
+        if (argv[i][0] == '-' || !ReadArgValue(argv[i], val)) return false;
       }
     }
+    else {
+      // parse an argument
+      if (!ReadArgValue(argv[i], vals_[args_[arg_ofs].name])) return false;
+      ++arg_ofs;
+    }
   }
-  return true;
+  return arg_ofs == args_.size();
 }
 
 void ArgParser::PrintHelp() {
