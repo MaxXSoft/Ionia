@@ -34,6 +34,7 @@ class VMCodeGen {
   void CNSH(std::uint32_t num);
   void PUSH();
   void POP();
+  void SWAP();
   void RET();
   void CALL(const std::string &name);
   void TCAL(const std::string &name);
@@ -41,6 +42,8 @@ class VMCodeGen {
   // create a new named label
   void LABEL(const std::string &label);
 
+  // get function value (pseudo instruction)
+  void GetFuncValue(const std::string &name);
   // define function (pseudo instruction)
   void DefineFunction(const std::string &name);
   // set constant value (pseudo instruction)

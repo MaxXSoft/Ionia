@@ -209,6 +209,10 @@ void VMCodeGen::POP() {
   PushInst(InstOp::POP);
 }
 
+void VMCodeGen::SWAP() {
+  PushInst(InstOp::SWAP);
+}
+
 void VMCodeGen::RET() {
   PushInst(InstOp::RET);
 }
@@ -238,9 +242,13 @@ void VMCodeGen::LABEL(const std::string &label) {
   }
 }
 
-void VMCodeGen::DefineFunction(const std::string &name) {
+void VMCodeGen::GetFuncValue(const std::string &name) {
   SetConst(GetFuncId(name));
   FUN();
+}
+
+void VMCodeGen::DefineFunction(const std::string &name) {
+  GetFuncValue(name);
   SET(name);
 }
 

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <algorithm>
 #include <cassert>
 
 #include "vm/codegen.h"
@@ -376,6 +377,20 @@ bool VM::Run() {
     else {
       val_reg_ = vals_.top();
       vals_.pop();
+      VM_NEXT(1);
+    }
+  }
+
+  // swap 2 values in top of value stack
+  VM_LABEL(SWAP) {
+    if (vals_.size() < 2) {
+      return PrintError("insufficient stack size");
+    }
+    else {
+      opr = vals_.top();
+      vals_.pop();
+      std::swap(vals_.top(), opr);
+      vals_.push(opr);
       VM_NEXT(1);
     }
   }
