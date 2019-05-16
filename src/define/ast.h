@@ -17,7 +17,7 @@ class BaseAST {
 
   virtual ASTPtr Clone() = 0;
   virtual ValPtr Eval(Interpreter &intp) = 0;
-  virtual bool Compile(Compiler &comp) = 0;
+  virtual void Compile(Compiler &comp) = 0;
 };
 
 class IdAST : public BaseAST {
@@ -26,7 +26,7 @@ class IdAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
-  bool Compile(Compiler &comp) override;
+  void Compile(Compiler &comp) override;
 
  private:
   std::string id_;
@@ -38,7 +38,7 @@ class NumAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
-  bool Compile(Compiler &comp) override;
+  void Compile(Compiler &comp) override;
 
  private:
   int num_;
@@ -51,7 +51,7 @@ class DefineAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
-  bool Compile(Compiler &comp) override;
+  void Compile(Compiler &comp) override;
 
  private:
   std::string id_;
@@ -65,7 +65,7 @@ class FuncAST : public BaseAST {
 
   virtual ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
-  bool Compile(Compiler &comp) override;
+  void Compile(Compiler &comp) override;
 
   virtual ValPtr Call(Interpreter &intp);
 
@@ -98,7 +98,7 @@ class FunCallAST : public BaseAST {
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
-  bool Compile(Compiler &comp) override;
+  void Compile(Compiler &comp) override;
 
  private:
   std::string id_;

@@ -1,5 +1,6 @@
 #include "define/ast.h"
 #include "back/interpreter/interpreter.h"
+#include "back/compiler/compiler.h"
 
 #include <iostream>
 
@@ -76,27 +77,22 @@ ValPtr PseudoFuncAST::Call(Interpreter &intp) {
 
 // method 'Compile'
 
-bool IdAST::Compile(Compiler &comp) {
-  // TODO
-  return false;
+void IdAST::Compile(Compiler &comp) {
+  comp.CompileId(id_);
 }
 
-bool NumAST::Compile(Compiler &comp) {
-  // TODO
-  return false;
+void NumAST::Compile(Compiler &comp) {
+  comp.CompileNum(num_);
 }
 
-bool DefineAST::Compile(Compiler &comp) {
-  // TODO
-  return false;
+void DefineAST::Compile(Compiler &comp) {
+  comp.CompileDefine(id_, expr_);
 }
 
-bool FuncAST::Compile(Compiler &comp) {
-  // TODO
-  return false;
+void FuncAST::Compile(Compiler &comp) {
+  comp.CompileFunc(args_, expr_);
 }
 
-bool FunCallAST::Compile(Compiler &comp) {
-  // TODO
-  return false;
+void FunCallAST::Compile(Compiler &comp) {
+  comp.CompileFunCall(id_, args_);
 }
