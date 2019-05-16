@@ -83,13 +83,10 @@ bool VM::DoCall(const VMValue &func) {
   auto it = ext_funcs_.find(func.value);
   if (it != ext_funcs_.end()) {
     // call external function
-    envs_.push(MakeVMEnv());
-    envs_.top()->ret_pc = pc_ + 4;
     if (!it->second(vals_, val_reg_)) {
       return PrintError("invalid function call");
     }
-    pc_ = envs_.top()->ret_pc;
-    envs_.pop();
+    pc_ += 4;
   }
   else {
     // set up environment
@@ -110,7 +107,6 @@ bool VM::DoTailCall(const VMValue &func) {
   auto it = ext_funcs_.find(func.value);
   if (it != ext_funcs_.end()) {
     // call external function
-    envs_.top()->outer = nullptr;
     if (!it->second(vals_, val_reg_)) {
       return PrintError("invalid function call");
     }
@@ -119,7 +115,7 @@ bool VM::DoTailCall(const VMValue &func) {
   }
   else {
     // switch environment
-    envs_.top()->outer = func.env;
+    if (envs_.top() != func.env) envs_.top()->outer = func.env;
     if (func.value >= pc_table_.size()) {
       return PrintError("invalid function pc");
     }
@@ -162,7 +158,13 @@ bool VM::IonIf(ValueStack &vals, VMValue &ret) {
   auto else_then = vals.top();
   vals.pop();
   // tail call corresponding part
-  return DoTailCall(cond ? then : else_then);
+  auto result = DoTailCall(cond ? then : else_then);
+  if (result) {
+    auto env = MakeVMEnv();
+    env->ret_pc = pc_;
+    envs_.push(env);
+  }
+  return result;
 }
 
 bool VM::IonIs(ValueStack &vals, VMValue &ret) {
