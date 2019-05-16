@@ -112,11 +112,18 @@ std::uint32_t VMCodeGen::GetFuncId(const std::string &label) {
   // try to find in named labels
   auto it = labels_.find(label);
   if (it != labels_.end()) return it->second;
-  // add label to unfilled map
-  pc_table_.push_back(0);
-  auto pc_id = pc_table_.size() - 1;
-  unfilled_.insert({label, pc_id});
-  return pc_id;
+  // check unfilled map
+  it = unfilled_.find(label);
+  if (it == unfilled_.end()) {
+    // add label to unfilled map
+    pc_table_.push_back(0);
+    auto pc_id = pc_table_.size() - 1;
+    unfilled_.insert({label, pc_id});
+    return pc_id;
+  }
+  else {
+    return it->second;
+  }
 }
 
 std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {

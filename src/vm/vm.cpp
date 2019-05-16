@@ -30,6 +30,7 @@ bool PrintError(const char *message, const char *symbol) {
 void VM::InitExtFuncs() {
   // reset ext environment
   ext_ = MakeVMEnv();
+  root_->outer = ext_;
   // try to set up all Ionia standard functions
   BindExtFunc("<<<", &VM::IonPrint);
   BindExtFunc(">>>", &VM::IonInput);
@@ -196,26 +197,26 @@ bool VM::IonCalcOp(ValueStack &vals, VMValue &ret, Operator op) {
   }
   // calculate
   switch (op) {
-    case Operator::Equal: ret.value = lhs == rhs;
-    case Operator::NotEqual: ret.value = lhs != rhs;
-    case Operator::Less: ret.value = lhs < rhs;
-    case Operator::LessEqual: ret.value = lhs <= rhs;
-    case Operator::Great: ret.value = lhs > rhs;
-    case Operator::GreatEqual: ret.value = lhs >= rhs;
-    case Operator::Add: ret.value = lhs + rhs;
-    case Operator::Sub: ret.value = lhs - rhs;
-    case Operator::Mul: ret.value = lhs * rhs;
-    case Operator::Div: ret.value = lhs / rhs;
-    case Operator::Mod: ret.value = lhs % rhs;
-    case Operator::And: ret.value = lhs & rhs;
-    case Operator::Or: ret.value = lhs | rhs;
-    case Operator::Not: ret.value = ~lhs;
-    case Operator::Xor: ret.value = lhs ^ rhs;
-    case Operator::Shl: ret.value = lhs << rhs;
-    case Operator::Shr: ret.value = lhs >> rhs;
-    case Operator::LogicAnd: ret.value = lhs && rhs;
-    case Operator::LogicOr: ret.value = lhs || rhs;
-    case Operator::LogicNot: ret.value = !lhs;
+    case Operator::Equal: ret.value = lhs == rhs; break;
+    case Operator::NotEqual: ret.value = lhs != rhs; break;
+    case Operator::Less: ret.value = lhs < rhs; break;
+    case Operator::LessEqual: ret.value = lhs <= rhs; break;
+    case Operator::Great: ret.value = lhs > rhs; break;
+    case Operator::GreatEqual: ret.value = lhs >= rhs; break;
+    case Operator::Add: ret.value = lhs + rhs; break;
+    case Operator::Sub: ret.value = lhs - rhs; break;
+    case Operator::Mul: ret.value = lhs * rhs; break;
+    case Operator::Div: ret.value = lhs / rhs; break;
+    case Operator::Mod: ret.value = lhs % rhs; break;
+    case Operator::And: ret.value = lhs & rhs; break;
+    case Operator::Or: ret.value = lhs | rhs; break;
+    case Operator::Not: ret.value = ~lhs; break;
+    case Operator::Xor: ret.value = lhs ^ rhs; break;
+    case Operator::Shl: ret.value = lhs << rhs; break;
+    case Operator::Shr: ret.value = lhs >> rhs; break;
+    case Operator::LogicAnd: ret.value = lhs && rhs; break;
+    case Operator::LogicOr: ret.value = lhs || rhs; break;
+    case Operator::LogicNot: ret.value = !lhs; break;
     default: assert(false);
   }
   // return to VM
