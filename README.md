@@ -17,4 +17,4 @@ number  ::= re"0|([1-9][0-9]*)";
 
 ## Copyright and License
 
-Copyright (C) 2010-2019 MaxXing. License GPLv3.
+Copyright (C) 2010-2019 MaxXing, MaxXSoft. License GPLv3.
