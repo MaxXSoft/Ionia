@@ -171,6 +171,15 @@ void VMCodeGen::GenerateBytecodeFile(const std::string &file) {
   ofs.write(reinterpret_cast<char *>(content.data()), content.size());
 }
 
+void VMCodeGen::Reset() {
+  sym_table_.clear();
+  pc_table_.clear();
+  global_funcs_.clear();
+  inst_buf_.clear();
+  labels_.clear();
+  unfilled_.clear();
+}
+
 void VMCodeGen::GET(const std::string &name) {
   PushInst({InstOp::GET, GetSymbolIndex(name)});
 }

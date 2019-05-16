@@ -25,6 +25,8 @@ class VMCodeGen {
   std::vector<std::uint8_t> GenerateBytecode();
   // generate bytecode to file
   void GenerateBytecodeFile(const std::string &file);
+  // reset generator
+  void Reset();
 
   // generate instructions
   void GET(const std::string &name);
