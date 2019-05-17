@@ -155,15 +155,15 @@ bool VM::IonInput(ValueStack &vals, Value &ret) {
 
 bool VM::IonIf(ValueStack &vals, Value &ret) {
   if (vals.size() < 3) return false;
-  // fetch condition
-  if (vals.top().env) return false;
-  auto cond = vals.top().value != 0;
+  // fetch false part
+  auto else_then = vals.top();
   vals.pop();
   // fetch true part
   auto then = vals.top();
   vals.pop();
-  // fetch false part
-  auto else_then = vals.top();
+  // fetch condition
+  if (vals.top().env) return false;
+  auto cond = vals.top().value != 0;
   vals.pop();
   // tail call corresponding part
   auto result = DoTailCall(cond ? then : else_then);
@@ -178,9 +178,9 @@ bool VM::IonIf(ValueStack &vals, Value &ret) {
 bool VM::IonIs(ValueStack &vals, Value &ret) {
   if (vals.size() < 2) return false;
   // fetch arguments
-  auto lhs = vals.top();
-  vals.pop();
   auto rhs = vals.top();
+  vals.pop();
+  auto lhs = vals.top();
   vals.pop();
   // check if lhs and rhs are same
   if ((lhs.env && rhs.env) || (!lhs.env && !rhs.env)) {
@@ -204,6 +204,7 @@ bool VM::IonCalcOp(ValueStack &vals, Value &ret, Operator op) {
     if (vals.top().env) return false;
     rhs = vals.top().value;
     vals.pop();
+    std::swap(lhs, rhs);
   }
   // calculate
   switch (op) {
@@ -294,9 +295,7 @@ bool VM::CallFunction(const std::string &name,
   auto env = MakeVMEnv(root_);
   // set up arguments
   if (args.size() != func.arg_count) return false;
-  for (auto it = args.rbegin(); it != args.rend(); ++it) {
-    vals_.push(*it);
-  }
+  for (const auto &i : args) vals_.push(i);
   // backup environment stack and reset
   // since VM will automatically stop when executing RET instruction
   // and there is only one environment in environment stack

@@ -80,7 +80,7 @@ class VM {
   // internal status
   std::uint32_t pc_;
   Value val_reg_;
-  std::stack<Value> vals_;
+  ValueStack vals_;
   std::stack<EnvPtr> envs_;
   EnvPtr root_, ext_;
   // tables
