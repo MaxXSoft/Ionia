@@ -61,7 +61,7 @@ void VM::InitExtFuncs() {
   BindExtFunc("!", &VM::IonCalcOp, Operator::LogicNot);
 }
 
-bool VM::GetEnvValue(VMInst *inst, VMValue &value) {
+bool VM::GetEnvValue(Inst *inst, VMValue &value) {
   auto cur_env = envs_.top();
   // recursively find value in environments
   while (cur_env) {
@@ -322,11 +322,11 @@ bool VM::Run() {
 #define VM_NEXT(len)                                    \
   do {                                                  \
     pc_ += len;                                         \
-    inst = PtrCast<VMInst>(rom_.data() + pc_);          \
+    inst = PtrCast<Inst>(rom_.data() + pc_);          \
     goto *inst_labels[static_cast<int>(inst->opcode)];  \
   } while (0)
 
-  VMInst *inst;
+  Inst *inst;
   VMValue opr;
   SlotType slot;
   const void *inst_labels[] = { VM_INST_ALL(VM_EXPAND_LABEL_LIST) };

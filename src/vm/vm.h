@@ -51,7 +51,7 @@ class VM {
   // add all Ionia standard functions, like 'is', '?', 'eq', '+'...
   void InitExtFuncs();
   // get value from current environment, return false if not found
-  bool GetEnvValue(VMInst *inst, VMValue &value);
+  bool GetEnvValue(Inst *inst, VMValue &value);
 
   // call a VM function
   bool DoCall(const VMValue &func);

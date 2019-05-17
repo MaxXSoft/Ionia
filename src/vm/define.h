@@ -20,16 +20,16 @@
 #define VM_EXPAND_LABEL_LIST(i)   &&VML_##i,
 // define a label of VM threading
 #define VM_LABEL(l)               VML_##l:
-// width of opcode field in VMInst
+// width of opcode field in Inst
 #define VM_INST_OPCODE_WIDTH      5
-// width of oprand field in VMInst
+// width of oprand field in Inst
 #define VM_INST_OPR_WIDTH         (32 - VM_INST_OPCODE_WIDTH)
-// immediate number mask of VMInst
+// immediate number mask of Inst
 #define VM_INST_IMM_MASK          ((1 << VM_INST_OPR_WIDTH) - 1)
 
 namespace ionia::vm {
 
-struct VMInst {
+struct Inst {
   // opcode
   enum class OpCode : std::uint32_t {
     VM_INST_ALL(VM_EXPAND_LIST)

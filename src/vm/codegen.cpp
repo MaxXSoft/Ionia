@@ -12,7 +12,7 @@ using namespace ionia::util;
 
 namespace {
 
-using InstOp = VMInst::OpCode;
+using InstOp = Inst::OpCode;
 
 }  // namespace
 
@@ -93,7 +93,7 @@ std::uint32_t CodeGen::GetSymbolIndex(const std::string &name) {
   return sym_table_.size() - 1;
 }
 
-void CodeGen::PushInst(const VMInst &inst) {
+void CodeGen::PushInst(const Inst &inst) {
   auto ptr = IntPtrCast<8>(&inst);
   inst_buf_.push_back(ptr[0]);
   inst_buf_.push_back(ptr[1]);
@@ -102,7 +102,7 @@ void CodeGen::PushInst(const VMInst &inst) {
   last_op_ = inst.opcode;
 }
 
-void CodeGen::PushInst(VMInst::OpCode op) {
+void CodeGen::PushInst(Inst::OpCode op) {
   inst_buf_.push_back(*IntPtrCast<8>(&op));
   last_op_ = op;
 }
@@ -268,7 +268,7 @@ void CodeGen::SetConst(std::int32_t num) {
 void CodeGen::GenReturn() {
   if (last_op_ == InstOp::CALL) {
     // modify opcode to TCAL
-    auto inst = PtrCast<VMInst>(inst_buf_.data() + inst_buf_.size() - 4);
+    auto inst = PtrCast<Inst>(inst_buf_.data() + inst_buf_.size() - 4);
     last_op_ = inst->opcode = InstOp::TCAL;
   }
   else {
