@@ -2,6 +2,8 @@
 
 Design and implementation of a functional scripting language.
 
+Ionia is simple, lightweight functional programming language, with implementation of interpreter and VM runtime.
+
 ## EBNF of Ion Lang
 
 ```ebnf
@@ -20,6 +22,7 @@ number  ::= re"0|([1-9][0-9]*)";
 - [x] Interpreter
 - [x] VM runtime
 - [x] Compiler
+- [ ] Documents
 - [ ] Disassembler
 - [ ] REPL
 - [ ] JIT
