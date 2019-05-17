@@ -42,14 +42,14 @@ struct Inst {
 struct Env;
 using EnvPtr = std::shared_ptr<Env>;
 
-struct VMValue {
+struct Value {
   std::int32_t value;
   // when env is nullptr, the value is integer
   EnvPtr env;
 };
 
 struct Env {
-  std::unordered_map<std::uint32_t, VMValue> slot;
+  std::unordered_map<std::uint32_t, Value> slot;
   EnvPtr outer;
   std::uint32_t ret_pc;
 };
@@ -75,12 +75,12 @@ inline EnvPtr MakeVMEnv(const EnvPtr &outer) {
 }
 
 // make new VM integer value
-inline VMValue MakeVMValue(std::int32_t value) {
+inline Value MakeVMValue(std::int32_t value) {
   return {value, nullptr};
 }
 
 // make new VM function value
-inline VMValue MakeVMValue(std::int32_t pc_id, const EnvPtr &env) {
+inline Value MakeVMValue(std::int32_t pc_id, const EnvPtr &env) {
   assert(env != nullptr);
   return {pc_id, env};
 }

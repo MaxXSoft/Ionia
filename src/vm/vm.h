@@ -14,9 +14,9 @@ namespace ionia::vm {
 class VM {
  public:
   // definition of value stack
-  using ValueStack = std::stack<VMValue>;
+  using ValueStack = std::stack<Value>;
   // definition of external function
-  using ExtFunc = std::function<bool(ValueStack &, VMValue &)>;
+  using ExtFunc = std::function<bool(ValueStack &, Value &)>;
 
   VM() { Reset(); }
 
@@ -28,10 +28,10 @@ class VM {
   // register an external function
   // if success, return function value
   bool RegisterFunction(const std::string &name, ExtFunc func,
-                        VMValue &ret);
+                        Value &ret);
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
-                    const std::vector<VMValue> &args, VMValue &ret);
+                    const std::vector<Value> &args, Value &ret);
 
   // reset VM's status (except symbol table, FPT, GFT and EFT)
   void Reset();
@@ -51,12 +51,12 @@ class VM {
   // add all Ionia standard functions, like 'is', '?', 'eq', '+'...
   void InitExtFuncs();
   // get value from current environment, return false if not found
-  bool GetEnvValue(Inst *inst, VMValue &value);
+  bool GetEnvValue(Inst *inst, Value &value);
 
   // call a VM function
-  bool DoCall(const VMValue &func);
+  bool DoCall(const Value &func);
   // tail call a VM function
-  bool DoTailCall(const VMValue &func);
+  bool DoTailCall(const Value &func);
 
   // bind member functions to external function
   template <typename Func, typename... Args>
@@ -66,17 +66,17 @@ class VM {
   }
 
   // Ionia standard fucntions
-  bool IonPrint(ValueStack &vals, VMValue &ret);
-  bool IonInput(ValueStack &vals, VMValue &ret);
-  bool IonIf(ValueStack &vals, VMValue &ret);
-  bool IonIs(ValueStack &vals, VMValue &ret);
-  bool IonCalcOp(ValueStack &vals, VMValue &ret, Operator op);
+  bool IonPrint(ValueStack &vals, Value &ret);
+  bool IonInput(ValueStack &vals, Value &ret);
+  bool IonIf(ValueStack &vals, Value &ret);
+  bool IonIs(ValueStack &vals, Value &ret);
+  bool IonCalcOp(ValueStack &vals, Value &ret, Operator op);
 
   std::vector<std::uint8_t> rom_;
   // internal status
   std::uint32_t pc_;
-  VMValue val_reg_;
-  std::stack<VMValue> vals_;
+  Value val_reg_;
+  std::stack<Value> vals_;
   std::stack<EnvPtr> envs_;
   EnvPtr root_, ext_;
   // tables

@@ -61,7 +61,7 @@ void VM::InitExtFuncs() {
   BindExtFunc("!", &VM::IonCalcOp, Operator::LogicNot);
 }
 
-bool VM::GetEnvValue(Inst *inst, VMValue &value) {
+bool VM::GetEnvValue(Inst *inst, Value &value) {
   auto cur_env = envs_.top();
   // recursively find value in environments
   while (cur_env) {
@@ -79,7 +79,7 @@ bool VM::GetEnvValue(Inst *inst, VMValue &value) {
   return PrintError("not found", str);
 }
 
-bool VM::DoCall(const VMValue &func) {
+bool VM::DoCall(const Value &func) {
   // check if is not a function
   if (!func.env) return PrintError("calling a non-function");
   // check if is an external function
@@ -103,7 +103,7 @@ bool VM::DoCall(const VMValue &func) {
   return true;
 }
 
-bool VM::DoTailCall(const VMValue &func) {
+bool VM::DoTailCall(const Value &func) {
   // check if is not a function
   if (!func.env) return PrintError("calling a non-function");
   // check if is an external function
@@ -127,7 +127,7 @@ bool VM::DoTailCall(const VMValue &func) {
   return true;
 }
 
-bool VM::IonPrint(ValueStack &vals, VMValue &ret) {
+bool VM::IonPrint(ValueStack &vals, Value &ret) {
   if (vals.size() < 1) return false;
   const auto &v = vals.top();
   if (v.env) {
@@ -142,13 +142,13 @@ bool VM::IonPrint(ValueStack &vals, VMValue &ret) {
   return true;
 }
 
-bool VM::IonInput(ValueStack &vals, VMValue &ret) {
+bool VM::IonInput(ValueStack &vals, Value &ret) {
   std::cin >> ret.value;
   ret.env = nullptr;
   return true;
 }
 
-bool VM::IonIf(ValueStack &vals, VMValue &ret) {
+bool VM::IonIf(ValueStack &vals, Value &ret) {
   if (vals.size() < 3) return false;
   // fetch condition
   if (vals.top().env) return false;
@@ -170,7 +170,7 @@ bool VM::IonIf(ValueStack &vals, VMValue &ret) {
   return result;
 }
 
-bool VM::IonIs(ValueStack &vals, VMValue &ret) {
+bool VM::IonIs(ValueStack &vals, Value &ret) {
   if (vals.size() < 2) return false;
   // fetch arguments
   auto lhs = vals.top();
@@ -188,7 +188,7 @@ bool VM::IonIs(ValueStack &vals, VMValue &ret) {
   return true;
 }
 
-bool VM::IonCalcOp(ValueStack &vals, VMValue &ret, Operator op) {
+bool VM::IonCalcOp(ValueStack &vals, Value &ret, Operator op) {
   std::int32_t lhs, rhs;
   // fetch lhs
   if (vals.top().env) return false;
@@ -258,12 +258,12 @@ bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
 }
 
 bool VM::RegisterFunction(const std::string &name, ExtFunc func) {
-  VMValue ret;
+  Value ret;
   return RegisterFunction(name, func, ret);
 }
 
 bool VM::RegisterFunction(const std::string &name, ExtFunc func,
-                          VMValue &ret) {
+                          Value &ret) {
   for (std::size_t i = 0; i < sym_table_.size(); ++i) {
     if (sym_table_[i] == name) {
       // get new function pc id
@@ -280,7 +280,7 @@ bool VM::RegisterFunction(const std::string &name, ExtFunc func,
 }
 
 bool VM::CallFunction(const std::string &name,
-                      const std::vector<VMValue> &args, VMValue &ret) {
+                      const std::vector<Value> &args, Value &ret) {
   // find function name in global function table
   auto it = global_funcs_.find("$" + name);
   if (it == global_funcs_.end()) return false;
@@ -327,7 +327,7 @@ bool VM::Run() {
   } while (0)
 
   Inst *inst;
-  VMValue opr;
+  Value opr;
   SlotType slot;
   const void *inst_labels[] = { VM_INST_ALL(VM_EXPAND_LABEL_LIST) };
   // fetch first instruction
