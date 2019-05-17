@@ -245,7 +245,7 @@ bool VM::LoadProgram(const std::string &file) {
 
 bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
   auto pos = CodeGen::ParseBytecode(buffer, sym_table_, pc_table_,
-                                      global_funcs_);
+                                    global_funcs_);
   if (pos < 0) return false;
   // copy bytecode segment
   rom_.reserve(buffer.size() - pos);
