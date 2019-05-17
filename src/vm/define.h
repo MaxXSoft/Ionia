@@ -15,6 +15,8 @@
   f(PUSH) f(POP) f(RET) f(CALL) f(TCAL)
 // expand macro to comma-separated list
 #define VM_EXPAND_LIST(i)         i,
+// expand macro to comma-separated string array
+#define VM_EXPAND_STR_ARRAY(i)    #i,
 // expand macro to label list
 #define VM_EXPAND_LABEL_LIST(i)   &&VML_##i,
 // define a label of VM threading
