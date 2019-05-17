@@ -25,9 +25,14 @@ class Disassembler {
  private:
   // print global function table
   void PrintGlobalFuncs(std::ostream &os);
+  // print function label
+  void PrintLabel(std::ostream &os);
+  // get label name via FPT index
+  std::string GetLabelName(int index);
 
   std::vector<std::uint8_t> rom_;
   unsigned int error_num_, pc_;
+  std::int64_t last_const_;
   // tables
   SymbolTable sym_table_;
   FuncPCTable pc_table_;
