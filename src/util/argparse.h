@@ -72,7 +72,7 @@ class ArgParser {
   // default padding width of argument description info
   static const int kDefaultPadding = 10;
   // minimum width of argument display in help message
-  static const int kArgMinWidth = sizeof("  -, -- <arg>   ") - 1;
+  static const int kArgMinWidth = sizeof("  -, -- <ARG>   ") - 1;
 
   struct ArgInfo {
     std::string name;

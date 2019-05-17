@@ -68,6 +68,7 @@ bool ArgParser::Parse(int argc, const char *argv[]) {
       else {
         // read argument of option
         ++i;
+        if (i >= argc) return false;
         if (argv[i][0] == '-' || !ReadArgValue(argv[i], val)) return false;
       }
     }
@@ -83,13 +84,17 @@ bool ArgParser::Parse(int argc, const char *argv[]) {
 void ArgParser::PrintHelp() {
   using namespace std;
   // print usage
-  cout << "usage: " << program_name_ << " ";
-  for (const auto &i : args_) cout << "<" << i.name << "> ";
-  if (!opts_.empty()) cout << "[options...]" << endl;
+  cout << "Usage: " << program_name_ << " ";
+  for (const auto &i : args_) {
+    cout << "<";
+    for (const auto &c : i.name) cout << std::toupper(c);
+    cout << "> ";
+  }
+  if (!opts_.empty()) cout << "[OPTIONS...]" << endl;
   // print arguments
   if (!args_.empty()) {
     cout << endl;
-    cout << "arguments:" << endl;
+    cout << "Arguments:" << endl;
     for (const auto &i : args_) {
       cout << left << setw(padding_) << ("  " + i.name);
       cout << i.help_msg << endl;
@@ -98,11 +103,11 @@ void ArgParser::PrintHelp() {
   // print options
   if (!opts_.empty()) {
     cout << endl;
-    cout << "options:" << endl;
+    cout << "Options:" << endl;
     for (const auto &i : opts_) {
       // generate option title
       auto title = "  -" + i.short_name + ", --" + i.name;
-      if (vals_[i.name].type() != typeid(bool)) title += " <arg>";
+      if (vals_[i.name].type() != typeid(bool)) title += " <ARG>";
       // print info
       cout << left << setw(padding_) << title;
       cout << i.help_msg << endl;
