@@ -61,7 +61,7 @@ struct GlobalFunc {
 
 // definition of tables
 using SynbolTable = std::vector<std::string>;
-using VMFuncPCTable = std::vector<std::uint32_t>;
+using FuncPCTable = std::vector<std::uint32_t>;
 using VMGlobalFuncTable = std::unordered_map<std::string, GlobalFunc>;
 
 // make new VM environment

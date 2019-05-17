@@ -23,7 +23,7 @@ const std::uint32_t CodeGen::kGFTItemSize;
 
 int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
                              SynbolTable &sym_table,
-                             VMFuncPCTable &pc_table,
+                             FuncPCTable &pc_table,
                              VMGlobalFuncTable &global_funcs) {
   std::size_t pos = 0;
   // check buffer size

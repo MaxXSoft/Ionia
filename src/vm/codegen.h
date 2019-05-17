@@ -21,7 +21,7 @@ class CodeGen {
   // If error, returns -1.
   static int ParseBytecode(const std::vector<std::uint8_t> &buffer,
                            SynbolTable &sym_table,
-                           VMFuncPCTable &pc_table,
+                           FuncPCTable &pc_table,
                            VMGlobalFuncTable &global_funcs);
 
   // generate bytecode vector
@@ -74,7 +74,7 @@ class CodeGen {
 
   // tables
   SynbolTable sym_table_;
-  VMFuncPCTable pc_table_;
+  FuncPCTable pc_table_;
   std::map<std::uint32_t, GlobalFunc> global_funcs_;
   // buffer that stores instructions
   std::vector<std::uint8_t> inst_buf_;
