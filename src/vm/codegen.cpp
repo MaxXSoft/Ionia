@@ -17,11 +17,11 @@ using InstOp = VMInst::OpCode;
 }  // namespace
 
 // definitions of static member variables
-const std::uint32_t VMCodeGen::kFileHeader;
-const std::uint32_t VMCodeGen::kMinFileSize;
-const std::uint32_t VMCodeGen::kGFTItemSize;
+const std::uint32_t CodeGen::kFileHeader;
+const std::uint32_t CodeGen::kMinFileSize;
+const std::uint32_t CodeGen::kGFTItemSize;
 
-int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
+int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
                              VMSymbolTable &sym_table,
                              VMFuncPCTable &pc_table,
                              VMGlobalFuncTable &global_funcs) {
@@ -83,7 +83,7 @@ int VMCodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
 }
 
 // TODO: optimize
-std::uint32_t VMCodeGen::GetSymbolIndex(const std::string &name) {
+std::uint32_t CodeGen::GetSymbolIndex(const std::string &name) {
   // search name in symbol table
   for (int i = 0; i < sym_table_.size(); ++i) {
     if (sym_table_[i] == name) return i;
@@ -93,7 +93,7 @@ std::uint32_t VMCodeGen::GetSymbolIndex(const std::string &name) {
   return sym_table_.size() - 1;
 }
 
-void VMCodeGen::PushInst(const VMInst &inst) {
+void CodeGen::PushInst(const VMInst &inst) {
   auto ptr = IntPtrCast<8>(&inst);
   inst_buf_.push_back(ptr[0]);
   inst_buf_.push_back(ptr[1]);
@@ -102,12 +102,12 @@ void VMCodeGen::PushInst(const VMInst &inst) {
   last_op_ = inst.opcode;
 }
 
-void VMCodeGen::PushInst(VMInst::OpCode op) {
+void CodeGen::PushInst(VMInst::OpCode op) {
   inst_buf_.push_back(*IntPtrCast<8>(&op));
   last_op_ = op;
 }
 
-std::uint32_t VMCodeGen::GetFuncId(const std::string &label) {
+std::uint32_t CodeGen::GetFuncId(const std::string &label) {
   // try to find in named labels
   auto it = labels_.find(label);
   if (it != labels_.end()) return it->second;
@@ -125,7 +125,7 @@ std::uint32_t VMCodeGen::GetFuncId(const std::string &label) {
   }
 }
 
-std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
+std::vector<std::uint8_t> CodeGen::GenerateBytecode() {
   std::ostringstream content;
   assert(unfilled_.empty());
   // generate file header
@@ -170,13 +170,13 @@ std::vector<std::uint8_t> VMCodeGen::GenerateBytecode() {
   return std::vector<std::uint8_t>(s.begin(), s.end());
 }
 
-void VMCodeGen::GenerateBytecodeFile(const std::string &file) {
+void CodeGen::GenerateBytecodeFile(const std::string &file) {
   auto content = GenerateBytecode();
   std::ofstream ofs(file, std::ios::binary);
   ofs.write(reinterpret_cast<char *>(content.data()), content.size());
 }
 
-void VMCodeGen::Reset() {
+void CodeGen::Reset() {
   sym_table_.clear();
   pc_table_.clear();
   global_funcs_.clear();
@@ -186,51 +186,51 @@ void VMCodeGen::Reset() {
   last_op_ = static_cast<InstOp>(0);
 }
 
-void VMCodeGen::GET(const std::string &name) {
+void CodeGen::GET(const std::string &name) {
   PushInst({InstOp::GET, GetSymbolIndex(name)});
 }
 
-void VMCodeGen::SET(const std::string &name) {
+void CodeGen::SET(const std::string &name) {
   PushInst({InstOp::SET, GetSymbolIndex(name)});
 }
 
-void VMCodeGen::FUN() {
+void CodeGen::FUN() {
   PushInst(InstOp::FUN);
 }
 
-void VMCodeGen::CNST(std::uint32_t num) {
+void CodeGen::CNST(std::uint32_t num) {
   PushInst({InstOp::CNST, num});
 }
 
-void VMCodeGen::CNSH(std::uint32_t num) {
+void CodeGen::CNSH(std::uint32_t num) {
   PushInst({InstOp::CNSH, num});
 }
 
-void VMCodeGen::PUSH() {
+void CodeGen::PUSH() {
   PushInst(InstOp::PUSH);
 }
 
-void VMCodeGen::POP() {
+void CodeGen::POP() {
   PushInst(InstOp::POP);
 }
 
-void VMCodeGen::SWAP() {
+void CodeGen::SWAP() {
   PushInst(InstOp::SWAP);
 }
 
-void VMCodeGen::RET() {
+void CodeGen::RET() {
   PushInst(InstOp::RET);
 }
 
-void VMCodeGen::CALL(const std::string &name) {
+void CodeGen::CALL(const std::string &name) {
   PushInst({InstOp::CALL, GetSymbolIndex(name)});
 }
 
-void VMCodeGen::TCAL(const std::string &name) {
+void CodeGen::TCAL(const std::string &name) {
   PushInst({InstOp::TCAL, GetSymbolIndex(name)});
 }
 
-void VMCodeGen::LABEL(const std::string &label) {
+void CodeGen::LABEL(const std::string &label) {
   assert(labels_.find(label) == labels_.end());
   // check if label is unfilled
   auto it = unfilled_.find(label);
@@ -247,17 +247,17 @@ void VMCodeGen::LABEL(const std::string &label) {
   }
 }
 
-void VMCodeGen::GetFuncValue(const std::string &name) {
+void CodeGen::GetFuncValue(const std::string &name) {
   SetConst(GetFuncId(name));
   FUN();
 }
 
-void VMCodeGen::DefineFunction(const std::string &name) {
+void CodeGen::DefineFunction(const std::string &name) {
   GetFuncValue(name);
   SET(name);
 }
 
-void VMCodeGen::SetConst(std::int32_t num) {
+void CodeGen::SetConst(std::int32_t num) {
   CNST(num & VM_INST_IMM_MASK);
   auto hi = num & ~VM_INST_IMM_MASK;
   if (hi && hi != ~VM_INST_IMM_MASK) {
@@ -265,7 +265,7 @@ void VMCodeGen::SetConst(std::int32_t num) {
   }
 }
 
-void VMCodeGen::GenReturn() {
+void CodeGen::GenReturn() {
   if (last_op_ == InstOp::CALL) {
     // modify opcode to TCAL
     auto inst = PtrCast<VMInst>(inst_buf_.data() + inst_buf_.size() - 4);
@@ -277,7 +277,7 @@ void VMCodeGen::GenReturn() {
   }
 }
 
-void VMCodeGen::RegisterGlobalFunction(const std::string &name,
+void CodeGen::RegisterGlobalFunction(const std::string &name,
                                        std::uint8_t arg_count) {
   // get function id
   assert(!name.empty() && name[0] == '$');

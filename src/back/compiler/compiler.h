@@ -44,7 +44,7 @@ class Compiler {
   // generate all of function definitions in 'func_defs_'
   void GenerateAllFuncDefs();
 
-  vm::VMCodeGen gen_;
+  vm::CodeGen gen_;
   std::deque<FuncDefInfo> func_defs_;
   int label_id_;
 };

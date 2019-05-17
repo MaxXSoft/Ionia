@@ -12,10 +12,10 @@
 namespace ionia::vm {
 
 // code generator of Ionia VM
-class VMCodeGen {
+class CodeGen {
  public:
-  VMCodeGen() { Reset(); }
-  virtual ~VMCodeGen() = default;
+  CodeGen() { Reset(); }
+  virtual ~CodeGen() = default;
 
   // Function returns start position of bytecode segment.
   // If error, returns -1.
