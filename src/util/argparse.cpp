@@ -89,7 +89,9 @@ void ArgParser::PrintHelp() {
   cout << "Usage: " << program_name_ << " ";
   for (const auto &i : args_) {
     cout << "<";
-    for (const auto &c : i.name) cout << std::toupper(c);
+    for (const auto &c : i.name) {
+      cout << static_cast<char>(std::toupper(c));
+    }
     cout << "> ";
   }
   if (!opts_.empty()) cout << "[OPTIONS...]" << endl;
