@@ -3,14 +3,14 @@
 {} = (s1, s2): s2
 
 yin = (cont1): {} (
-    <<<(0),
-    {} (
-        yang = (cont2): {} (
-            <<<(1),
-            cont1(cont2)
-        ),
-        yang(yang)
-    )
+  <<<(0),
+  {} (
+    yang = (cont2): {} (
+      <<<(1),
+      cont1(cont2)
+    ),
+    yang(yang)
+  )
 )
 
 yin(yin)

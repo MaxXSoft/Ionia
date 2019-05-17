@@ -4,16 +4,16 @@ block = (s1, s2): s2
 
 # Z combinator
 Z = (f):
-    block(g = (h):
-            (x): invoke(f(h(h)), x),
-        g(g))
+  block(g = (h):
+      (x): invoke(f(h(h)), x),
+    g(g))
 
 # implement 'fib' function by using Z combinator
 fib = Z((f):
-    (n):
-        ?(le(n, 2),
-            (): 1,
-            (): +(f(-(n, 1)), f(-(n, 2)))))
+  (n):
+    ?(le(n, 2),
+      (): 1,
+      (): +(f(-(n, 1)), f(-(n, 2)))))
 <<<(fib(10))
 
 # SKI combinator
@@ -24,10 +24,10 @@ S = (x): (y): (z): invoke(x(z), y(z))
 # implement function by using SKI combinator
 compose = invoke(S(K(S)), K)    # compose = \g.\f.\x. g (f x)
 <<<(invoke(
-        invoke(
-            compose((x): +(x, 3)),
-            (x): *(x, 2)),
-        10))
+      invoke(
+        compose((x): +(x, 3)),
+        (x): *(x, 2)),
+      10))
 
 # implement I combinator just using SK combinator
 i' = invoke(S(K), K)
@@ -42,7 +42,7 @@ k' = Iota(Iota(i'))
 s' = Iota(k')
 compose' = invoke(s'(k'(s')), k')
 <<<(invoke(
-        invoke(
-            compose'((x): +(x, 3)),
-            (x): *(x, 2)),
-        11))
+      invoke(
+        compose'((x): +(x, 3)),
+        (x): *(x, 2)),
+      11))

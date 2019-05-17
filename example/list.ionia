@@ -6,9 +6,9 @@ cdr = (l): l(1)
 
 # access list via index
 at = (l, i):
-    ?(le(i, 0),
-        (): l(0),
-        (): at(l(1), -(i, 1)))
+  ?(le(i, 0),
+    (): l(0),
+    (): at(l(1), -(i, 1)))
 
 # stack operation
 push = (l, x): cons(x, l)
@@ -29,19 +29,19 @@ l = push(l, 1)
 
 # some common functions
 map = (l, f):
-    cons(f(l(0)),
-        ?(is(l(1), nil),
-            (): nil,
-            (): map(l(1), f)))
-foldr = (l, f, x):
-    f(l(0),
-        ?(is(l(1), nil),
-            (): x,
-            (): foldr(l(1), f, x)))
-foldl = (l, f, x):
+  cons(f(l(0)),
     ?(is(l(1), nil),
-        (): f(x, l(0)),
-        (): foldl(l(1), f, f(x, l(0))))
+      (): nil,
+      (): map(l(1), f)))
+foldr = (l, f, x):
+  f(l(0),
+    ?(is(l(1), nil),
+      (): x,
+      (): foldr(l(1), f, x)))
+foldl = (l, f, x):
+  ?(is(l(1), nil),
+    (): f(x, l(0)),
+    (): foldl(l(1), f, f(x, l(0))))
 
 map(map(l, (x): +(x, 10)), <<<)
 <<<(foldr(l, -, 0))
