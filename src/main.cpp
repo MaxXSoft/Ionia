@@ -25,7 +25,7 @@ constexpr const char *kDefaultOutputFile = "out.ibc";
 void PrintVersion() {
   cout << APP_NAME << " version " << APP_VERSION << endl;
   cout << "A simple, lightweight functional programming language," << endl;
-  cout << "with implementation of interpreter and VM runtime." << endl;
+  cout << "with an interpreter and VM runtime implementation." << endl;
   cout << endl;
   cout << "Copyright (C) 2010-2019 MaxXing, MaxXSoft. License GPLv3.";
   cout << endl;

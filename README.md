@@ -2,7 +2,7 @@
 
 Design and implementation of a functional scripting language.
 
-Ionia is simple, lightweight functional programming language, with implementation of interpreter and VM runtime.
+Ionia is simple, lightweight functional programming language, with an interpreter and VM runtime implementation.
 
 ## EBNF of Ionia
 
