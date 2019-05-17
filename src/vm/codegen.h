@@ -20,7 +20,7 @@ class CodeGen {
   // Function returns start position of bytecode segment.
   // If error, returns -1.
   static int ParseBytecode(const std::vector<std::uint8_t> &buffer,
-                           VMSymbolTable &sym_table,
+                           SynbolTable &sym_table,
                            VMFuncPCTable &pc_table,
                            VMGlobalFuncTable &global_funcs);
 
@@ -73,7 +73,7 @@ class CodeGen {
   std::uint32_t GetFuncId(const std::string &label);
 
   // tables
-  VMSymbolTable sym_table_;
+  SynbolTable sym_table_;
   VMFuncPCTable pc_table_;
   std::map<std::uint32_t, GlobalFunc> global_funcs_;
   // buffer that stores instructions

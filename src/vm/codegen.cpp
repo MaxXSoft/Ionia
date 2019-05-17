@@ -22,7 +22,7 @@ const std::uint32_t CodeGen::kMinFileSize;
 const std::uint32_t CodeGen::kGFTItemSize;
 
 int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
-                             VMSymbolTable &sym_table,
+                             SynbolTable &sym_table,
                              VMFuncPCTable &pc_table,
                              VMGlobalFuncTable &global_funcs) {
   std::size_t pos = 0;
