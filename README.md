@@ -15,6 +15,15 @@ id      ::= re"~([0-9]|=|\(|\)|,|:)(=|\(|\)|,|:)*";
 number  ::= re"0|([1-9][0-9]*)";
 ```
 
+## To-Do List
+
+- [x] Interpreter
+- [x] VM runtime
+- [x] Compiler
+- [ ] Disassembler
+- [ ] REPL
+- [ ] JIT
+
 ## Copyright and License
 
 Copyright (C) 2010-2019 MaxXing, MaxXSoft. License GPLv3.
