@@ -129,7 +129,7 @@ bool Disassembler::Disassemble(std::ostream &os) {
       case OpCode::CNST: case OpCode::CNSH: {
         PrintRawBytecode(os, inst, false);
         PrintInstOpName(os, inst->opcode);
-        os << inst->opr;
+        os << std::dec << inst->opr;
         // record last constant
         if (inst->opcode == OpCode::CNST) {
           last_const_ = inst->opr;
