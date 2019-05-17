@@ -60,7 +60,7 @@ struct GlobalFunc {
 };
 
 // definition of tables
-using SynbolTable = std::vector<std::string>;
+using SymbolTable = std::vector<std::string>;
 using FuncPCTable = std::vector<std::uint32_t>;
 using GlobalFuncTable = std::unordered_map<std::string, GlobalFunc>;
 

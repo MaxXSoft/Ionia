@@ -80,7 +80,7 @@ class VM {
   std::stack<EnvPtr> envs_;
   EnvPtr root_, ext_;
   // tables
-  SynbolTable sym_table_;
+  SymbolTable sym_table_;
   FuncPCTable pc_table_;
   GlobalFuncTable global_funcs_;
   std::unordered_map<std::uint32_t, ExtFunc> ext_funcs_;
