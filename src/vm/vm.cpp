@@ -17,18 +17,22 @@ namespace {
 // type of slot in VM environment
 using SlotType = decltype(Env::slot);
 
-bool PrintError(const char *message) {
-  std::cerr << "[ERROR] " << message << std::endl;
-  return false;
-}
-
-bool PrintError(const char *message, const char *symbol) {
-  std::cerr << "[ERROR] symbol '" << symbol << "' ";
-  std::cerr << message << std::endl;
-  return false;
-}
-
 }  // namespace
+
+bool VM::PrintError(const char *message) {
+  std::cerr << "[ERROR] " << message << ", pc = ";
+  std::cerr << std::hex << std::setw(8) << std::setfill('0') << pc_;
+  std::cerr << std::endl;
+  return false;
+}
+
+bool VM::PrintError(const char *message, const char *symbol) {
+  std::cerr << "[ERROR] symbol '" << symbol << "' ";
+  std::cerr << message << ", pc = ";
+  std::cerr << std::hex << std::setw(8) << std::setfill('0') << pc_;
+  std::cerr << std::endl;
+  return false;
+}
 
 void VM::InitExtFuncs() {
   // reset ext environment
@@ -131,8 +135,9 @@ bool VM::IonPrint(ValueStack &vals, Value &ret) {
   if (vals.size() < 1) return false;
   const auto &v = vals.top();
   if (v.env) {
-    std::cout << "<function at: ";
-    std::cout << std::hex << v.value << ">" << std::endl;
+    std::cout << "<function at: 0x";
+    std::cout << std::hex << std::setw(8) << std::setfill('0');
+    std::cout << v.value << ">" << std::endl;
   }
   else {
     std::cout << std::dec << v.value << std::endl;

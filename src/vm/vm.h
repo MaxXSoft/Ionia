@@ -47,6 +47,10 @@ class VM {
     LogicAnd, LogicOr, LogicNot,
   };
 
+  // print error message
+  bool PrintError(const char *message);
+  bool PrintError(const char *message, const char *symbol);
+
   // initialize external function table
   // add all Ionia standard functions, like 'is', '?', 'eq', '+'...
   void InitExtFuncs();
