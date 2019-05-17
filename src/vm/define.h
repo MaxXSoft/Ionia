@@ -20,7 +20,7 @@
 // define a label of VM threading
 #define VM_LABEL(l)               VML_##l:
 // width of opcode field in Inst
-#define VM_INST_OPCODE_WIDTH      5
+#define VM_INST_OPCODE_WIDTH      4
 // width of oprand field in Inst
 #define VM_INST_OPR_WIDTH         (32 - VM_INST_OPCODE_WIDTH)
 // immediate number mask of Inst
