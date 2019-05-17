@@ -280,7 +280,7 @@ bool VM::RegisterFunction(const std::string &name, ExtFunc func,
       // add func to external function table
       ext_funcs_.insert({pc_id, func});
       // add func to ext environment
-      ret = MakeVMValue(pc_id, ext_);
+      ret = MakeValue(pc_id, ext_);
       ext_->slot.insert({i, ret});
       return true;
     }

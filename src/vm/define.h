@@ -76,12 +76,12 @@ inline EnvPtr MakeEnv(const EnvPtr &outer) {
 }
 
 // make new VM integer value
-inline Value MakeVMValue(std::int32_t value) {
+inline Value MakeValue(std::int32_t value) {
   return {value, nullptr};
 }
 
 // make new VM function value
-inline Value MakeVMValue(std::int32_t pc_id, const EnvPtr &env) {
+inline Value MakeValue(std::int32_t pc_id, const EnvPtr &env) {
   assert(env != nullptr);
   return {pc_id, env};
 }
