@@ -7,6 +7,8 @@
 #include "define/type.h"
 #include "define/symbol.h"
 
+namespace ionia {
+
 // forward declaration of interpreter & compiler
 class Interpreter;
 class Compiler;
@@ -104,5 +106,7 @@ class FunCallAST : public BaseAST {
   std::string id_;
   ASTPtrList args_;
 };
+
+}  // ionia
 
 #endif  // IONIA_DEFINE_AST_H_

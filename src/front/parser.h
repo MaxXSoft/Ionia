@@ -4,6 +4,8 @@
 #include "front/lexer.h"
 #include "define/ast.h"
 
+namespace ionia {
+
 class Parser {
  public:
   Parser(Lexer &lexer) : lexer_(lexer), error_num_(0) { NextToken(); }
@@ -30,5 +32,7 @@ class Parser {
   Token cur_token_;
   unsigned int error_num_;
 };
+
+}  // namespace ionia
 
 #endif  // IONIA_FRONT_PARSER_H_

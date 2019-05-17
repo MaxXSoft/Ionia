@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+using namespace ionia;
+
 ValPtr Environment::GetValue(const std::string &id) {
   auto it = symbols_.find(id);
   if (it != symbols_.end()) {

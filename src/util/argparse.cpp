@@ -6,6 +6,8 @@
 #include <cctype>
 #include <cassert>
 
+using namespace ionia::util;
+
 // all supported types
 #define ARGPARSE_SUPPORTED_TYPES(f)                               \
   f(short) f(unsigned short) f(int) f(unsigned int) f(long)       \

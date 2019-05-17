@@ -4,6 +4,8 @@
 #include <istream>
 #include <string>
 
+namespace ionia {
+
 class Lexer {
  public:
   enum class Token { End, Error, Id, Num, Char };
@@ -39,5 +41,7 @@ class Lexer {
   int num_val_;
   char char_val_;
 };
+
+}  // namespace ionia
 
 #endif  // IONIA_FRONT_LEXER_H_

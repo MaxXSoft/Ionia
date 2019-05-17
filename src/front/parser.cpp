@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using namespace ionia;
+
 ASTPtr Parser::PrintError(const char *message) {
   std::cerr << "error(parser): " << message << std::endl;
   ++error_num_;

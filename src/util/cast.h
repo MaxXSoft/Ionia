@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <cstdint>
 
+namespace ionia::util {
+
 // get int type by specifying bit width
 template <std::size_t N> struct IntPtrType { using Type = void; };
 template <> struct IntPtrType<8> { using Type = std::uint8_t; };
@@ -30,5 +32,7 @@ template <typename T, typename U>
 const T *PtrCast(const U *ptr) {
   return reinterpret_cast<const T *>(ptr);
 }
+
+}  // namespace ionia::util
 
 #endif  // IONIA_UTIL_CAST_H_

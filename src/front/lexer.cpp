@@ -4,6 +4,8 @@
 #include <cctype>
 #include <cstdlib>
 
+using namespace ionia;
+
 namespace {
 
 inline bool IsIdChar(char c) {

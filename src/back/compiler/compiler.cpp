@@ -1,5 +1,7 @@
 #include "back/compiler/compiler.h"
 
+using namespace ionia;
+
 std::string Compiler::GetNextLabel() {
   return ":func-" + std::to_string(label_id_++);
 }

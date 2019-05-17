@@ -27,6 +27,8 @@
 // immediate number mask of VMInst
 #define VM_INST_IMM_MASK          ((1 << VM_INST_OPR_WIDTH) - 1)
 
+namespace ionia::vm {
+
 struct VMInst {
   // opcode
   enum class OpCode : std::uint32_t {
@@ -82,5 +84,7 @@ inline VMValue MakeVMValue(std::int32_t pc_id, const VMEnvPtr &env) {
   assert(env != nullptr);
   return {pc_id, env};
 }
+
+}  // namespace ionia::vm
 
 #endif  // IONIA_VM_DEFINE_H_

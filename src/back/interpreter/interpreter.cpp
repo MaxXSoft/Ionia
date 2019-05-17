@@ -7,6 +7,8 @@
 
 #include "define/ast.h"
 
+using namespace ionia;
+
 namespace {
 
 inline FuncAST *FuncCast(const ValPtr &val) {

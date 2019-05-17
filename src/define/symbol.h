@@ -9,6 +9,8 @@
 
 #include "define/type.h"
 
+namespace ionia {
+
 class Environment;
 using EnvPtr = std::shared_ptr<Environment>;
 
@@ -50,5 +52,7 @@ class Environment {
   EnvPtr outer_;
   std::map<std::string, ValPtr> symbols_;
 };
+
+}  // namespace ionia
 
 #endif  // IONIA_DEFINE_SYMBOL_H_

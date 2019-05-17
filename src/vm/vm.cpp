@@ -9,6 +9,9 @@
 #include "vm/codegen.h"
 #include "util/cast.h"
 
+using namespace ionia::vm;
+using namespace ionia::util;
+
 namespace {
 
 // type of slot in VM environment

@@ -9,6 +9,8 @@
 
 #include "vm/define.h"
 
+namespace ionia::vm {
+
 class VM {
  public:
   // definition of value stack
@@ -83,5 +85,7 @@ class VM {
   VMGlobalFuncTable global_funcs_;
   std::unordered_map<std::uint32_t, ExtFunc> ext_funcs_;
 };
+
+}  // namespace ionia::vm
 
 #endif  // IONIA_VM_VM_H_

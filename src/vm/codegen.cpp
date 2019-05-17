@@ -7,6 +7,9 @@
 
 #include "util/cast.h"
 
+using namespace ionia::vm;
+using namespace ionia::util;
+
 namespace {
 
 using InstOp = VMInst::OpCode;

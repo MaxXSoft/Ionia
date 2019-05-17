@@ -6,6 +6,8 @@
 #include <map>
 #include <any>
 
+namespace ionia::util {
+
 // command line argument parser
 class ArgParser {
  public:
@@ -93,5 +95,7 @@ class ArgParser {
   std::map<std::string, std::size_t> opt_map_;
   std::map<std::string, std::any> vals_;
 };
+
+}  // namespace ionia::util
 
 #endif  // IONIA_UTIL_ARGPARSE_H_

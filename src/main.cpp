@@ -13,6 +13,7 @@
 #include "util/argparse.h"
 
 using namespace std;
+using namespace ionia;
 
 namespace {
 
@@ -50,7 +51,7 @@ int HandleFrondEnd(const std::string &input,
 
 // run bytecode file with VM
 int RunBytecode(const std::string &input) {
-  VM vm;
+  vm::VM vm;
   if (!vm.LoadProgram(input)) {
     cerr << "invalid bytecode file" << endl;
     return 1;
@@ -85,7 +86,7 @@ int CompileAndRun(const std::string &input) {
   // check if error
   if (err) return err;
   // generate and run
-  VM vm;
+  vm::VM vm;
   auto ret = vm.LoadProgram(comp.GenerateBytecode());
   assert(ret);
   return vm.Run() ? 0 : 1;
@@ -112,7 +113,7 @@ int Interpret(const std::string &input) {
 
 int main(int argc, const char *argv[]) {
   // set up argument parser
-  ArgParser argp;
+  util::ArgParser argp;
   argp.AddArgument<string>("input", "input source/bytecode file");
   argp.AddOption<bool>("help", "h", "show this message", false);
   argp.AddOption<bool>("version", "v", "show version info", false);

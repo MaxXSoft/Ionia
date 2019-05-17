@@ -4,6 +4,8 @@
 
 #include <iostream>
 
+using namespace ionia;
+
 // method 'Clone'
 
 ASTPtr IdAST::Clone() {

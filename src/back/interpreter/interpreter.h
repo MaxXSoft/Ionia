@@ -7,6 +7,8 @@
 #include "define/ast.h"
 #include "define/symbol.h"
 
+namespace ionia {
+
 class Interpreter {
  public:
   Interpreter() : error_num_(0) {
@@ -49,5 +51,7 @@ class Interpreter {
   EnvPtr root_;
   std::stack<EnvPtr> envs_;
 };
+
+}  // namespace ionia
 
 #endif  // IONIA_BACK_INTERPRETER_INTERPRETER_H_

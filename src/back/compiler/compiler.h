@@ -9,6 +9,8 @@
 #include "define/ast.h"
 #include "vm/codegen.h"
 
+namespace ionia {
+
 class Compiler {
  public:
   Compiler() { Reset(); }
@@ -46,5 +48,7 @@ class Compiler {
   std::deque<FuncDefInfo> func_defs_;
   int label_id_;
 };
+
+}  // namespace ionia
 
 #endif  // IONIA_BACK_COMPILER_COMPILER_H_

@@ -9,6 +9,8 @@
 
 #include "vm/define.h"
 
+namespace ionia::vm {
+
 // code generator of Ionia VM
 class VMCodeGen {
  public:
@@ -80,5 +82,7 @@ class VMCodeGen {
   // map of labels
   std::map<std::string, std::uint32_t> labels_, unfilled_;
 };
+
+}  // namespace ionia::vm
 
 #endif  // IONIA_VM_BYTECODE_H_
