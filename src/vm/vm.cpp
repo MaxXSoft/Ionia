@@ -90,10 +90,13 @@ bool VM::DoCall(const Value &func) {
   auto it = ext_funcs_.find(func.value);
   if (it != ext_funcs_.end()) {
     // call external function
+    envs_.push(MakeVMEnv());
+    envs_.top()->ret_pc = pc_ + 4;
     if (!it->second(vals_, val_reg_)) {
       return PrintError("invalid function call");
     }
-    pc_ += 4;
+    pc_ = envs_.top()->ret_pc;
+    envs_.pop();
   }
   else {
     // set up environment
