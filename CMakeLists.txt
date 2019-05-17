@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Ionia VERSION "0.0.2")
+project(Ionia VERSION "0.1.0")
 
 # # set compiler path
 # set(CMAKE_C_COMPILER "/usr/local/opt/gcc/bin/gcc-8")
