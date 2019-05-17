@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <fstream>
 #include <algorithm>
+#include <utility>
 #include <cassert>
 
 #include "vm/codegen.h"
@@ -125,7 +126,9 @@ bool VM::DoTailCall(const Value &func) {
   }
   else {
     // switch environment
-    if (envs_.top() != func.env) envs_.top()->outer = func.env;
+    auto env = MakeEnv(func.env);
+    env->ret_pc = envs_.top()->ret_pc;
+    envs_.top() = std::move(env);
     if (func.value >= pc_table_.size()) {
       return PrintError("invalid function pc");
     }
