@@ -213,10 +213,6 @@ void CodeGen::POP() {
   PushInst(InstOp::POP);
 }
 
-void CodeGen::SWAP() {
-  PushInst(InstOp::SWAP);
-}
-
 void CodeGen::RET() {
   PushInst(InstOp::RET);
 }

@@ -387,20 +387,6 @@ bool VM::Run() {
     }
   }
 
-  // swap 2 values in top of value stack
-  VM_LABEL(SWAP) {
-    if (vals_.size() < 2) {
-      return PrintError("insufficient stack size");
-    }
-    else {
-      opr = vals_.top();
-      vals_.pop();
-      std::swap(vals_.top(), opr);
-      vals_.push(opr);
-      VM_NEXT(1);
-    }
-  }
-
   // return from function
   VM_LABEL(RET) {
     if (envs_.size() > 1) {

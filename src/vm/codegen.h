@@ -38,7 +38,6 @@ class CodeGen {
   void CNSH(std::uint32_t num);
   void PUSH();
   void POP();
-  void SWAP();
   void RET();
   void CALL(const std::string &name);
   void TCAL(const std::string &name);
