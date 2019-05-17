@@ -22,10 +22,12 @@ number  ::= re"0|([1-9][0-9]*)";
 - [x] Interpreter
 - [x] VM runtime
 - [x] Compiler
+- [x] Disassembler
 - [ ] Documents
-- [ ] Disassembler
+- [ ] Optimizer
 - [ ] REPL
 - [ ] JIT
+- [ ] Tutorial
 
 ## Copyright and License
 
