@@ -82,7 +82,7 @@ class VM {
   // tables
   SynbolTable sym_table_;
   FuncPCTable pc_table_;
-  VMGlobalFuncTable global_funcs_;
+  GlobalFuncTable global_funcs_;
   std::unordered_map<std::uint32_t, ExtFunc> ext_funcs_;
 };
 

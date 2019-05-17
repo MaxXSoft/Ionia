@@ -20,9 +20,8 @@ class CodeGen {
   // Function returns start position of bytecode segment.
   // If error, returns -1.
   static int ParseBytecode(const std::vector<std::uint8_t> &buffer,
-                           SynbolTable &sym_table,
-                           FuncPCTable &pc_table,
-                           VMGlobalFuncTable &global_funcs);
+                           SynbolTable &sym_table, FuncPCTable &pc_table,
+                           GlobalFuncTable &global_funcs);
 
   // generate bytecode vector
   std::vector<std::uint8_t> GenerateBytecode();
