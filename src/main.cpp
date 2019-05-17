@@ -89,6 +89,7 @@ int CompileAndRun(const std::string &input) {
   // generate and run
   vm::VM vm;
   auto ret = vm.LoadProgram(comp.GenerateBytecode());
+  static_cast<void>(ret);
   assert(ret);
   return vm.Run() ? 0 : 1;
 }

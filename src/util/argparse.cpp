@@ -38,6 +38,7 @@ void ArgParser::CheckArgName(const std::string &name) {
   assert(!name.empty());
   for (const auto &i : name) {
     assert(std::isalnum(i) || i == '_' || i == '-');
+    static_cast<void>(i);
   }
 }
 
