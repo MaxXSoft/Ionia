@@ -66,9 +66,11 @@ int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
   for (std::size_t i = 0; i < *global_len;) {
     // read function id
     auto func_id = IntPtrCast<32>(buffer.data() + pos + i);
+    if (*func_id >= *sym_len) return -1;
     i += 4;
     // read function pc
     glob_func.pc_id = *IntPtrCast<32>(buffer.data() + pos + i);
+    if (glob_func.pc_id >= *fpt_len) return -1;
     i += 4;
     // read argument count
     glob_func.arg_count = buffer[pos + i];
