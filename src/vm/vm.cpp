@@ -125,6 +125,7 @@ bool VM::DoTailCall(const Value &func) {
     envs_.pop();
   }
   else {
+    // TODO: if there is an infinite loop, system will run out of memory
     // switch environment
     auto env = MakeEnv(func.env);
     env->ret_pc = envs_.top()->ret_pc;

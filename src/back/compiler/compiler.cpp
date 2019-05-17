@@ -20,6 +20,10 @@ void Compiler::GenerateAllFuncDefs() {
     func.expr->Compile(*this);
     // generate return
     gen_.GenReturn();
+    // check if is global function
+    if (func.name[0] == '$') {
+      gen_.RegisterGlobalFunction(func.name, func.args.size());
+    }
     func_defs_.pop_front();
   }
 }
@@ -61,14 +65,22 @@ void Compiler::CompileNum(int num) {
 }
 
 void Compiler::CompileDefine(const std::string &id, const ASTPtr &expr) {
+  auto last_func_def_len = func_defs_.size();
+  // generate definition
   expr->Compile(*this);
+  // check if length of func def changed
+  if (func_defs_.size() != last_func_def_len) {
+    // record function name
+    func_defs_.back().name = id;
+  }
+  // generate SET instruction
   gen_.SET(id);
 }
 
 void Compiler::CompileFunc(const IdList &args, const ASTPtr &expr) {
   auto label = GetNextLabel();
   // record function definition
-  func_defs_.emplace_back(FuncDefInfo({label, args, expr->Clone()}));
+  func_defs_.emplace_back(FuncDefInfo({label, "", args, expr->Clone()}));
   // generate function value
   gen_.GetFuncValue(label);
 }

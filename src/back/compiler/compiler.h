@@ -35,6 +35,7 @@ class Compiler {
  private:
   struct FuncDefInfo {
     std::string label;
+    std::string name;
     IdList args;
     ASTPtr expr;
   };
