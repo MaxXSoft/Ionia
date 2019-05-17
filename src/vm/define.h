@@ -66,12 +66,12 @@ using FuncPCTable = std::vector<std::uint32_t>;
 using GlobalFuncTable = std::unordered_map<std::string, GlobalFunc>;
 
 // make new VM environment
-inline EnvPtr MakeVMEnv() {
+inline EnvPtr MakeEnv() {
   return std::make_shared<Env>(Env({{}, nullptr, 0}));
 }
 
 // make new VM environment with specific outer environment
-inline EnvPtr MakeVMEnv(const EnvPtr &outer) {
+inline EnvPtr MakeEnv(const EnvPtr &outer) {
   return std::make_shared<Env>(Env({{}, outer, 0}));
 }
 

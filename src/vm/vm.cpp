@@ -36,7 +36,7 @@ bool VM::PrintError(const char *message, const char *symbol) {
 
 void VM::InitExtFuncs() {
   // reset ext environment
-  ext_ = MakeVMEnv();
+  ext_ = MakeEnv();
   root_->outer = ext_;
   // try to set up all Ionia standard functions
   BindExtFunc("<<<", &VM::IonPrint);
@@ -90,7 +90,7 @@ bool VM::DoCall(const Value &func) {
   auto it = ext_funcs_.find(func.value);
   if (it != ext_funcs_.end()) {
     // call external function
-    envs_.push(MakeVMEnv());
+    envs_.push(MakeEnv());
     envs_.top()->ret_pc = pc_ + 4;
     if (!it->second(vals_, val_reg_)) {
       return PrintError("invalid function call");
@@ -100,7 +100,7 @@ bool VM::DoCall(const Value &func) {
   }
   else {
     // set up environment
-    envs_.push(MakeVMEnv(func.env));
+    envs_.push(MakeEnv(func.env));
     envs_.top()->ret_pc = pc_ + 4;
     if (func.value >= pc_table_.size()) {
       return PrintError("invalid function pc");
@@ -171,7 +171,7 @@ bool VM::IonIf(ValueStack &vals, Value &ret) {
   // tail call corresponding part
   auto result = DoTailCall(cond ? then : else_then);
   if (result) {
-    auto env = MakeVMEnv();
+    auto env = MakeEnv();
     env->ret_pc = pc_;
     envs_.push(env);
   }
@@ -295,7 +295,7 @@ bool VM::CallFunction(const std::string &name,
   if (it == global_funcs_.end()) return false;
   const auto &func = it->second;
   // set up new environment
-  auto env = MakeVMEnv(root_);
+  auto env = MakeEnv(root_);
   // set up arguments
   if (args.size() != func.arg_count) return false;
   for (const auto &i : args) vals_.push(i);
@@ -321,7 +321,7 @@ void VM::Reset() {
   while (!vals_.empty()) vals_.pop();
   while (!envs_.empty()) envs_.pop();
   // create root environment
-  root_ = MakeVMEnv(ext_);
+  root_ = MakeEnv(ext_);
   envs_.push(root_);
 }
 
