@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <deque>
 #include <cstdint>
 
 #include "define/ast.h"
@@ -42,7 +43,7 @@ class Compiler {
   void GenerateAllFuncDefs();
 
   VMCodeGen gen_;
-  std::vector<FuncDefInfo> func_defs_;
+  std::deque<FuncDefInfo> func_defs_;
   int label_id_;
 };
 

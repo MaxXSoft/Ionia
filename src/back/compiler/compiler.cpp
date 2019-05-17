@@ -5,20 +5,21 @@ std::string Compiler::GetNextLabel() {
 }
 
 void Compiler::GenerateAllFuncDefs() {
-  for (const auto &it : func_defs_) {
+  while (!func_defs_.empty()) {
+    const auto &func = func_defs_.front();
     // generate label
-    gen_.LABEL(it.label);
+    gen_.LABEL(func.label);
     // generate prologue
-    for (const auto &i : it.args) {
+    for (const auto &i : func.args) {
       gen_.POP();
       gen_.SET(i);
     }
     // generate body
-    it.expr->Compile(*this);
+    func.expr->Compile(*this);
     // generate return
     gen_.GenReturn();
+    func_defs_.pop_front();
   }
-  func_defs_.clear();
 }
 
 std::vector<std::uint8_t> Compiler::GenerateBytecode() {
