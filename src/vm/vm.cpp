@@ -15,7 +15,7 @@ using namespace ionia::util;
 namespace {
 
 // type of slot in VM environment
-using SlotType = decltype(VMEnv::slot);
+using SlotType = decltype(Env::slot);
 
 bool PrintError(const char *message) {
   std::cerr << "[ERROR] " << message << std::endl;

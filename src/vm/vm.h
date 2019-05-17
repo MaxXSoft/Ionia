@@ -77,8 +77,8 @@ class VM {
   std::uint32_t pc_;
   VMValue val_reg_;
   std::stack<VMValue> vals_;
-  std::stack<VMEnvPtr> envs_;
-  VMEnvPtr root_, ext_;
+  std::stack<EnvPtr> envs_;
+  EnvPtr root_, ext_;
   // tables
   VMSymbolTable sym_table_;
   VMFuncPCTable pc_table_;

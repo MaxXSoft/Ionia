@@ -38,19 +38,19 @@ struct Inst {
   std::uint32_t opr : VM_INST_OPR_WIDTH;
 };
 
-// forward declaration of VMEnv
-struct VMEnv;
-using VMEnvPtr = std::shared_ptr<VMEnv>;
+// forward declaration of Env
+struct Env;
+using EnvPtr = std::shared_ptr<Env>;
 
 struct VMValue {
   std::int32_t value;
   // when env is nullptr, the value is integer
-  VMEnvPtr env;
+  EnvPtr env;
 };
 
-struct VMEnv {
+struct Env {
   std::unordered_map<std::uint32_t, VMValue> slot;
-  VMEnvPtr outer;
+  EnvPtr outer;
   std::uint32_t ret_pc;
 };
 
@@ -65,13 +65,13 @@ using VMFuncPCTable = std::vector<std::uint32_t>;
 using VMGlobalFuncTable = std::unordered_map<std::string, VMGlobalFunc>;
 
 // make new VM environment
-inline VMEnvPtr MakeVMEnv() {
-  return std::make_shared<VMEnv>(VMEnv({{}, nullptr, 0}));
+inline EnvPtr MakeVMEnv() {
+  return std::make_shared<Env>(Env({{}, nullptr, 0}));
 }
 
 // make new VM environment with specific outer environment
-inline VMEnvPtr MakeVMEnv(const VMEnvPtr &outer) {
-  return std::make_shared<VMEnv>(VMEnv({{}, outer, 0}));
+inline EnvPtr MakeVMEnv(const EnvPtr &outer) {
+  return std::make_shared<Env>(Env({{}, outer, 0}));
 }
 
 // make new VM integer value
@@ -80,7 +80,7 @@ inline VMValue MakeVMValue(std::int32_t value) {
 }
 
 // make new VM function value
-inline VMValue MakeVMValue(std::int32_t pc_id, const VMEnvPtr &env) {
+inline VMValue MakeVMValue(std::int32_t pc_id, const EnvPtr &env) {
   assert(env != nullptr);
   return {pc_id, env};
 }
