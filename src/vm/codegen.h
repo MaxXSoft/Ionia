@@ -75,7 +75,7 @@ class CodeGen {
   // tables
   VMSymbolTable sym_table_;
   VMFuncPCTable pc_table_;
-  std::map<std::uint32_t, VMGlobalFunc> global_funcs_;
+  std::map<std::uint32_t, GlobalFunc> global_funcs_;
   // buffer that stores instructions
   std::vector<std::uint8_t> inst_buf_;
   Inst::OpCode last_op_;

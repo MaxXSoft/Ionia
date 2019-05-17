@@ -62,7 +62,7 @@ int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
   auto global_len = IntPtrCast<32>(buffer.data() + pos);
   pos += 4;
   // read global function table
-  VMGlobalFunc glob_func;
+  GlobalFunc glob_func;
   global_funcs.clear();
   for (std::size_t i = 0; i < *global_len;) {
     // read function id
@@ -284,7 +284,7 @@ void CodeGen::RegisterGlobalFunction(const std::string &name,
   auto func_id = GetSymbolIndex(name);
   assert(global_funcs_.find(func_id) == global_funcs_.end());
   // initialize global func structure
-  VMGlobalFunc func;
+  GlobalFunc func;
   // get function pc id
   func.pc_id = GetFuncId(name);
   // get argument count

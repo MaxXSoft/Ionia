@@ -54,7 +54,7 @@ struct Env {
   std::uint32_t ret_pc;
 };
 
-struct VMGlobalFunc {
+struct GlobalFunc {
   std::uint32_t pc_id;
   std::uint8_t arg_count;
 };
@@ -62,7 +62,7 @@ struct VMGlobalFunc {
 // definition of tables
 using VMSymbolTable = std::vector<std::string>;
 using VMFuncPCTable = std::vector<std::uint32_t>;
-using VMGlobalFuncTable = std::unordered_map<std::string, VMGlobalFunc>;
+using VMGlobalFuncTable = std::unordered_map<std::string, GlobalFunc>;
 
 // make new VM environment
 inline EnvPtr MakeVMEnv() {
