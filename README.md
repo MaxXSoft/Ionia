@@ -4,7 +4,7 @@ Design and implementation of a functional scripting language.
 
 Ionia is simple, lightweight functional programming language, with implementation of interpreter and VM runtime.
 
-## EBNF of Ion Lang
+## EBNF of Ionia
 
 ```ebnf
 program ::= {stat};
