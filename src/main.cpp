@@ -10,6 +10,7 @@
 #include "back/interpreter/interpreter.h"
 #include "back/compiler/compiler.h"
 #include "vm/vm.h"
+#include "vm/disasm.h"
 #include "util/argparse.h"
 
 using namespace std;
@@ -94,9 +95,21 @@ int CompileAndRun(const std::string &input) {
 
 // disassemble input bytecode file to output
 int Disassemble(const std::string &input, const std::string &output) {
-  // TODO
-  cerr << "disassembler is not implemented" << endl;
-  return 1;
+  vm::Disassembler dis;
+  // load bytecode file
+  if (!dis.LoadBytecode(input)) {
+    cerr << "invalid bytecode file" << endl;
+    return 1;
+  }
+  // print to output
+  if (output.empty()) {
+    dis.Disassemble(cout);
+  }
+  else {
+    ofstream ofs(output);
+    dis.Disassemble(ofs);
+  }
+  return dis.error_num();
 }
 
 // interpret input source file by using interpreter
