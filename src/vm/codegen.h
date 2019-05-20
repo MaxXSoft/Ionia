@@ -42,7 +42,7 @@ class CodeGen {
   void CALL(const std::string &name);
   void TCAL(const std::string &name);
 
-  // create a new named label
+  // create a new label
   void LABEL(const std::string &label);
 
   // get function value (pseudo instruction)
@@ -53,6 +53,8 @@ class CodeGen {
   void SetConst(std::int32_t num);
   // automatic generate RET or TCAL instruction (pseudo instruction)
   void GenReturn();
+  // generate GET only when it's necessary (pseudo instruction)
+  void SmartGet(const std::string &name);
   // register new global function
   void RegisterGlobalFunction(const std::string &name,
                               std::uint8_t arg_count);

@@ -274,6 +274,17 @@ void CodeGen::GenReturn() {
   }
 }
 
+void CodeGen::SmartGet(const std::string &name) {
+  if (last_op_ == InstOp::SET) {
+    auto index = GetSymbolIndex(name);
+    // check if last instruction has same index
+    auto inst = PtrCast<Inst>(inst_buf_.data() + inst_buf_.size() - 4);
+    if (inst->opr == index) return;
+  }
+  // just generate GET
+  GET(name);
+}
+
 void CodeGen::RegisterGlobalFunction(const std::string &name,
                                        std::uint8_t arg_count) {
   // get function id
