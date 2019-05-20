@@ -57,7 +57,7 @@ void Compiler::CompileNext(const ASTPtr &ast) {
 }
 
 void Compiler::CompileId(const std::string &id) {
-  gen_.GET(id);
+  gen_.SmartGet(id);
 }
 
 void Compiler::CompileNum(int num) {
