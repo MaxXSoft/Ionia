@@ -10,11 +10,9 @@ class Lexer {
  public:
   enum class Token { End, Error, Id, Num, Char };
 
-  Lexer(std::istream &in) : in_(in), last_char_(' '), error_num_(0) {
-    in_ >> std::noskipws;
-    NextChar();
-  }
+  Lexer(std::istream &in) : in_(in) { Reset(); }
 
+  void Reset();
   Token NextToken();
 
   unsigned int error_num() const { return error_num_; }

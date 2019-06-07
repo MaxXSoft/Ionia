@@ -8,8 +8,9 @@ namespace ionia {
 
 class Parser {
  public:
-  Parser(Lexer &lexer) : lexer_(lexer), error_num_(0) { NextToken(); }
+  Parser(Lexer &lexer) : lexer_(lexer) { Reset(); }
 
+  void Reset();
   ASTPtr ParseNext();
 
   unsigned int error_num() const { return error_num_; }

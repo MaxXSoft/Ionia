@@ -106,6 +106,12 @@ ASTPtr Parser::ParseFunCall() {
   return std::make_unique<FunCallAST>(id, std::move(args));
 }
 
+void Parser::Reset() {
+  lexer_.Reset();
+  error_num_ = 0;
+  NextToken();
+}
+
 ASTPtr Parser::ParseNext() {
   if (cur_token_ == Token::End) return nullptr;
   if (cur_token_ != Token::Id) return PrintError("expected id");
