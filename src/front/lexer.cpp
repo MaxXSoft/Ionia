@@ -60,7 +60,6 @@ void Lexer::Reset() {
   last_char_ = ' ';
   error_num_ = 0;
   in_ >> std::noskipws;
-  NextChar();
 }
 
 Lexer::Token Lexer::NextToken() {
