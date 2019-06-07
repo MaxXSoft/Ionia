@@ -63,6 +63,10 @@ int RunBytecode(const std::string &input) {
 
 // just run REPL
 int RunREPL(bool print_value) {
+  // show version info first
+  PrintVersion();
+  cout << endl;
+  // initialize interpreter & REPL
   Interpreter intp;
   REPL repl(intp);
   repl.set_print_value(print_value);
