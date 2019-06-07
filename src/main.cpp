@@ -3,6 +3,7 @@
 #include <fstream>
 #include <functional>
 #include <cassert>
+#include <cstring>
 
 #include "version.h"
 #include "front/lexer.h"
@@ -62,7 +63,7 @@ int RunBytecode(const std::string &input) {
 }
 
 // just run REPL
-int RunREPL(bool print_value) {
+void RunREPL(bool print_value) {
   // show version info first
   PrintVersion();
   cout << endl;
@@ -71,7 +72,6 @@ int RunREPL(bool print_value) {
   REPL repl(intp);
   repl.set_print_value(print_value);
   repl.Run();
-  return 0;
 }
 
 // interpret input source file by using interpreter
@@ -145,11 +145,10 @@ int main(int argc, const char *argv[]) {
   argp.AddArgument<string>("input", "input source/bytecode file");
   argp.AddOption<bool>("help", "h", "show this message", false);
   argp.AddOption<bool>("version", "v", "show version info", false);
-  argp.AddOption<bool>("repl", "e", "run REPL (default)", true);
   argp.AddOption<bool>("print", "p",
                        "print value of each expression in REPL", false);
   argp.AddOption<bool>("interpret", "i",
-                       "run source file with interpreter", false);
+                       "run source file with interpreter (default)", true);
   argp.AddOption<bool>("compile", "c", "compile source file to bytecode",
                        false);
   argp.AddOption<string>("output", "o", "set output file name", "");
@@ -159,7 +158,7 @@ int main(int argc, const char *argv[]) {
   argp.AddOption<bool>("disassemble", "d", "disassemble bytecode file",
                        false);
   // parse argument
-  argp.Parse(argc, argv);
+  auto ret = argp.Parse(argc, argv);
 
   // check if need to exit program
   if (argp.GetValue<bool>("help")) {
@@ -170,14 +169,22 @@ int main(int argc, const char *argv[]) {
     PrintVersion();
     return 0;
   }
+  else if (!ret) {
+    if (argc == 1 || (argc == 2 && !strcmp(argv[1], "-p"))) {
+      RunREPL(argp.GetValue<bool>("print"));
+      return 0;
+    }
+    else {
+      cerr << "invalid input, run '";
+      cerr << argp.program_name() << " -h' for help" << endl;
+      return 1;
+    }
+  }
 
   // dispatch
   int result;
   auto input = argp.GetValue<string>("input");
-  if (argp.GetValue<bool>("interpret")) {
-    result = Interpret(input);
-  }
-  else if (argp.GetValue<bool>("run-vm")) {
+  if (argp.GetValue<bool>("run-vm")) {
     result = RunBytecode(input);
   }
   else if (argp.GetValue<bool>("compile")) {
@@ -189,8 +196,8 @@ int main(int argc, const char *argv[]) {
   else if (argp.GetValue<bool>("disassemble")) {
     result = Disassemble(input, argp.GetValue<string>("output"));
   }
-  else if (argp.GetValue<bool>("repl")) {
-    result = RunREPL(argp.GetValue<bool>("print"));
+  else if (argp.GetValue<bool>("interpret")) {
+    result = Interpret(input);
   }
   else {
     cerr << "invalid command line argument" << endl;
