@@ -25,7 +25,7 @@ number  ::= re"0|([1-9][0-9]*)";
 - [x] Disassembler
 - [ ] Documents
 - [ ] Optimizer
-- [ ] REPL
+- [x] REPL
 - [ ] JIT
 - [ ] Tutorial
 
