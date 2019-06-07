@@ -32,7 +32,7 @@ void REPL::Run() {
     // evaluate and print
     auto val = ast->Eval(intp_);
     if (print_value_) {
-      auto value_name = "$" + std::to_string(value_num_);
+      auto value_name = "$" + std::to_string(value_num_++);
       std::cout << value_name << " = ";
       intp_.PrintValue(val);
       // add last value to root environment
