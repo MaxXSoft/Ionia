@@ -28,9 +28,11 @@ void REPL::Run() {
     // parse current line
     parser.Reset();
     auto ast = parser.ParseNext();
-    if (!ast) break;
+    if (!ast) continue;
     // evaluate and print
     auto val = ast->Eval(intp_);
+    if (!val) continue;
+    // print value
     if (print_value_) {
       auto value_name = "$" + std::to_string(value_num_++);
       std::cout << value_name << " = ";
