@@ -30,7 +30,7 @@ class Compiler {
   void CompileNum(int num);
   void CompileDefine(const std::string &id, const ASTPtr &expr);
   void CompileFunc(const IdList &args, const ASTPtr &expr);
-  void CompileFunCall(const std::string &id, const ASTPtrList &args);
+  void CompileFunCall(const ASTPtr &callee, const ASTPtrList &args);
 
  private:
   struct FuncDefInfo {

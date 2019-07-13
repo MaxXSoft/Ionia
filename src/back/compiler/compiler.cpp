@@ -85,7 +85,7 @@ void Compiler::CompileFunc(const IdList &args, const ASTPtr &expr) {
   gen_.GetFuncValue(label);
 }
 
-void Compiler::CompileFunCall(const std::string &id,
+void Compiler::CompileFunCall(const ASTPtr &callee,
                               const ASTPtrList &args) {
   // push all arguments
   for (const auto &i : args) {
@@ -93,5 +93,6 @@ void Compiler::CompileFunCall(const std::string &id,
     gen_.PUSH();
   }
   // call function id
-  gen_.CALL(id);
+  callee->Compile(*this);
+  gen_.CALL();
 }
