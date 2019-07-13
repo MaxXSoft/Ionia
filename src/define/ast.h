@@ -95,15 +95,15 @@ class PseudoFuncAST : public FuncAST {
 
 class FunCallAST : public BaseAST {
  public:
-  FunCallAST(const std::string &id, ASTPtrList args)
-      : id_(id), args_(std::move(args)) {}
+  FunCallAST(ASTPtr callee, ASTPtrList args)
+      : callee_(std::move(callee)), args_(std::move(args)) {}
 
   ASTPtr Clone() override;
   ValPtr Eval(Interpreter &intp) override;
   void Compile(Compiler &comp) override;
 
  private:
-  std::string id_;
+  ASTPtr callee_;
   ASTPtrList args_;
 };
 

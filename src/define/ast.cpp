@@ -34,7 +34,7 @@ ASTPtr FunCallAST::Clone() {
   for (const auto &i : args_) {
     args.push_back(i->Clone());
   }
-  return std::make_unique<FunCallAST>(id_, std::move(args));
+  return std::make_unique<FunCallAST>(callee_->Clone(), std::move(args));
 }
 
 // method 'Eval'
@@ -64,7 +64,7 @@ ValPtr FunCallAST::Eval(Interpreter &intp) {
     if (!val) return nullptr;
     args.push_back(val);
   }
-  return intp.EvalFunCall(id_, args);
+  return intp.EvalFunCall(callee_->Eval(intp), args);
 }
 
 // method 'Call'
@@ -96,5 +96,5 @@ void FuncAST::Compile(Compiler &comp) {
 }
 
 void FunCallAST::Compile(Compiler &comp) {
-  comp.CompileFunCall(id_, args_);
+  comp.CompileFunCall(callee_, args_);
 }
