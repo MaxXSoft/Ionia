@@ -189,12 +189,11 @@ ValPtr Interpreter::EvalFunc(ASTPtr func) {
   return std::make_shared<Value>(envs_.top(), std::move(func));
 }
 
-ValPtr Interpreter::EvalFunCall(const std::string &id,
+ValPtr Interpreter::EvalFunCall(const ValPtr &callee,
                                 const ValPtrList &args) {
   // get & check function
-  auto func = envs_.top()->GetValue(id);
-  if (!func || !func->is_func()) return PrintError("invalid function");
-  return CallFunc(func, args);
+  if (!callee || !callee->is_func()) return PrintError("invalid function");
+  return CallFunc(callee, args);
 }
 
 ValPtr Interpreter::HandlePseudoFunCall(ValCallback func) {

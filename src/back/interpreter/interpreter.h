@@ -20,7 +20,7 @@ class Interpreter {
   ValPtr EvalNum(int num);
   ValPtr EvalDefine(const std::string &id, const ValPtr &expr);
   ValPtr EvalFunc(ASTPtr func);
-  ValPtr EvalFunCall(const std::string &id, const ValPtrList &args);
+  ValPtr EvalFunCall(const ValPtr &callee, const ValPtrList &args);
   ValPtr HandlePseudoFunCall(ValCallback func);
 
   void PrintValue(const ValPtr &value);
