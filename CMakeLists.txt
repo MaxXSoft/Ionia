@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(Ionia VERSION "0.2.1")
+project(Ionia VERSION "0.2.5")
 
 # set CMake module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
