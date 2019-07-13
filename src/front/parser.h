@@ -24,10 +24,10 @@ class Parser {
   }
 
   ASTPtr PrintError(const char *message);
-  ASTPtr ParseDefine();
+  ASTPtr ParseDefine(const std::string &id);
   ASTPtr ParseExpr();
   ASTPtr ParseFunc();
-  ASTPtr ParseFunCall();
+  ASTPtr ParseFunCall(ASTPtr callee);
 
   Lexer &lexer_;
   Token cur_token_;

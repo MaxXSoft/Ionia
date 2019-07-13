@@ -10,9 +10,7 @@ ASTPtr Parser::PrintError(const char *message) {
   return nullptr;
 }
 
-ASTPtr Parser::ParseDefine() {
-  // get id
-  auto id = lexer_.id_val();
+ASTPtr Parser::ParseDefine(const std::string &id) {
   // eat '='
   NextToken();
   // get expression
@@ -32,10 +30,10 @@ ASTPtr Parser::ParseExpr() {
         NextToken();
         // check if is function call or define
         if (IsTokenChar('(')) {
-          return ParseFunCall();
+          return ParseFunCall(std::make_unique<IdAST>(id));
         }
         else if (IsTokenChar('=')) {
-          return ParseDefine();
+          return ParseDefine(id);
         }
         else {
           return std::make_unique<IdAST>(id);
@@ -80,9 +78,7 @@ ASTPtr Parser::ParseFunc() {
   return std::make_unique<FuncAST>(std::move(args), std::move(expr));
 }
 
-ASTPtr Parser::ParseFunCall() {
-  // get id
-  auto id = lexer_.id_val();
+ASTPtr Parser::ParseFunCall(ASTPtr callee) {
   // eat '('
   NextToken();
   // get arguments
@@ -103,7 +99,16 @@ ASTPtr Parser::ParseFunCall() {
   // check ')'
   if (!IsTokenChar(')')) return PrintError("expected ')'");
   NextToken();
-  return std::make_unique<FunCallAST>(id, std::move(args));
+  // create AST
+  auto ast = std::make_unique<FunCallAST>(std::move(callee),
+                                          std::move(args));
+  // check if need to continue
+  if (IsTokenChar('(')) {
+    return ParseFunCall(std::move(ast));
+  }
+  else {
+    return ast;
+  }
 }
 
 void Parser::Reset() {
@@ -115,14 +120,15 @@ void Parser::Reset() {
 ASTPtr Parser::ParseNext() {
   if (cur_token_ == Token::End) return nullptr;
   if (cur_token_ != Token::Id) return PrintError("expected id");
+  auto id = lexer_.id_val();
   NextToken();
   // get statement
   ASTPtr stat;
   if (IsTokenChar('=')) {
-    stat = ParseDefine();
+    stat = ParseDefine(id);
   }
   else if (IsTokenChar('(')) {
-    stat = ParseFunCall();
+    stat = ParseFunCall(std::make_unique<IdAST>(id));
   }
   else {
     return PrintError("invalid statment");
