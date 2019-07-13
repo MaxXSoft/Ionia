@@ -1,11 +1,10 @@
 # some basic functions
-invoke = (f, v): f(v)
 block = (s1, s2): s2
 
 # Z combinator
 Z = (f):
   block(g = (h):
-      (x): invoke(f(h(h)), x),
+      (x): f(h(h))(x),
     g(g))
 
 # implement 'fib' function by using Z combinator
@@ -19,30 +18,22 @@ fib = Z((f):
 # SKI combinator
 I = (x): x
 K = (x): (y): x
-S = (x): (y): (z): invoke(x(z), y(z))
+S = (x): (y): (z): x(z)(y(z))
 
 # implement function by using SKI combinator
-compose = invoke(S(K(S)), K)    # compose = \g.\f.\x. g (f x)
-<<<(invoke(
-      invoke(
-        compose((x): +(x, 3)),
-        (x): *(x, 2)),
-      10))
+compose = S(K(S))(K)      # compose = \g.\f.\x. g (f x)
+<<<(compose((x): +(x, 3))((x): *(x, 2))(10))
 
 # implement I combinator just using SK combinator
-i' = invoke(S(K), K)
+i' = S(K)(K)
 <<<(i'(123))
 
 # Iota combinator
-Iota = (f): invoke(f(S), K)
+Iota = (f): f(S)(K)
 
 # implement SKI combinator by using Iota combinator
 i' = Iota(Iota)
 k' = Iota(Iota(i'))
 s' = Iota(k')
-compose' = invoke(s'(k'(s')), k')
-<<<(invoke(
-      invoke(
-        compose'((x): +(x, 3)),
-        (x): *(x, 2)),
-      11))
+compose' = s'(k'(s'))(k')
+<<<(compose'((x): +(x, 3))((x): *(x, 2))(11))
