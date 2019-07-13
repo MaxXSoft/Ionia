@@ -39,8 +39,8 @@ class CodeGen {
   void PUSH();
   void POP();
   void RET();
-  void CALL(const std::string &name);
-  void TCAL(const std::string &name);
+  void CALL();
+  void TCAL();
 
   // create a new label
   void LABEL(const std::string &label);

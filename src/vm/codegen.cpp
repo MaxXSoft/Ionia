@@ -21,6 +21,7 @@ const std::uint32_t CodeGen::kFileHeader;
 const std::uint32_t CodeGen::kMinFileSize;
 const std::uint32_t CodeGen::kGFTItemSize;
 
+// TODO: add version info
 int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
                            SymbolTable &sym_table, FuncPCTable &pc_table,
                            GlobalFuncTable &global_funcs) {
@@ -126,6 +127,7 @@ std::uint32_t CodeGen::GetFuncId(const std::string &label) {
   }
 }
 
+// TODO: add version info
 std::vector<std::uint8_t> CodeGen::GenerateBytecode() {
   std::ostringstream content;
   assert(unfilled_.empty());
@@ -219,12 +221,12 @@ void CodeGen::RET() {
   PushInst(InstOp::RET);
 }
 
-void CodeGen::CALL(const std::string &name) {
-  PushInst({InstOp::CALL, GetSymbolIndex(name)});
+void CodeGen::CALL() {
+  PushInst(InstOp::CALL);
 }
 
-void CodeGen::TCAL(const std::string &name) {
-  PushInst({InstOp::TCAL, GetSymbolIndex(name)});
+void CodeGen::TCAL() {
+  PushInst(InstOp::TCAL);
 }
 
 void CodeGen::LABEL(const std::string &label) {
@@ -265,7 +267,7 @@ void CodeGen::SetConst(std::int32_t num) {
 void CodeGen::GenReturn() {
   if (last_op_ == InstOp::CALL) {
     // modify opcode to TCAL
-    auto inst = PtrCast<Inst>(inst_buf_.data() + inst_buf_.size() - 4);
+    auto inst = PtrCast<Inst>(inst_buf_.data() + inst_buf_.size() - 1);
     last_op_ = inst->opcode = InstOp::TCAL;
   }
   else {

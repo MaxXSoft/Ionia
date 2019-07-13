@@ -92,7 +92,7 @@ bool VM::DoCall(const Value &func) {
   if (it != ext_funcs_.end()) {
     // call external function
     envs_.push(MakeEnv());
-    envs_.top()->ret_pc = pc_ + 4;
+    envs_.top()->ret_pc = pc_ + 1;
     if (!it->second(vals_, val_reg_)) {
       return PrintError("invalid function call");
     }
@@ -102,7 +102,7 @@ bool VM::DoCall(const Value &func) {
   else {
     // set up environment
     envs_.push(MakeEnv(func.env));
-    envs_.top()->ret_pc = pc_ + 4;
+    envs_.top()->ret_pc = pc_ + 1;
     if (func.value >= pc_table_.size()) {
       return PrintError("invalid function pc");
     }
@@ -333,7 +333,7 @@ bool VM::Run() {
 #define VM_NEXT(len)                                    \
   do {                                                  \
     pc_ += len;                                         \
-    inst = PtrCast<Inst>(rom_.data() + pc_);          \
+    inst = PtrCast<Inst>(rom_.data() + pc_);            \
     goto *inst_labels[static_cast<int>(inst->opcode)];  \
   } while (0)
 
@@ -413,17 +413,13 @@ bool VM::Run() {
 
   // call function and create new environment
   VM_LABEL(CALL) {
-    // get function object
-    if (!GetEnvValue(inst, opr)) return false;
-    if (!DoCall(opr)) return false;
+    if (!DoCall(val_reg_)) return false;
     VM_NEXT(0);
   }
 
   // tail call function and modify outer environment
   VM_LABEL(TCAL) {
-    // get function object
-    if (!GetEnvValue(inst, opr)) return false;
-    if (!DoTailCall(opr)) return false;
+    if (!DoTailCall(val_reg_)) return false;
     // return from root environment, exit from VM
     if (envs_.empty()) return true;
     VM_NEXT(0);

@@ -110,8 +110,7 @@ bool Disassembler::Disassemble(std::ostream &os) {
     // print current pc
     PrintPC(os, pc_, true);
     switch (inst->opcode) {
-      case OpCode::GET: case OpCode::SET:
-      case OpCode::CALL: case OpCode::TCAL: {
+      case OpCode::GET: case OpCode::SET: {
         PrintRawBytecode(os, inst, false);
         PrintInstOpName(os, inst->opcode);
         if (inst->opr >= sym_table_.size()) {
@@ -145,7 +144,8 @@ bool Disassembler::Disassemble(std::ostream &os) {
         break;
       }
       case OpCode::FUN: case OpCode::RET:
-      case OpCode::PUSH: case OpCode::POP: {
+      case OpCode::PUSH: case OpCode::POP:
+      case OpCode::CALL: case OpCode::TCAL: {
         PrintRawBytecode(os, inst, true);
         PrintInstOpName(os, inst->opcode);
         // print function mark
