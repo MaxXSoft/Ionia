@@ -12,7 +12,7 @@ stat    ::= define | funcall;
 define  ::= id "=" expr;
 expr    ::= func | funcall | define | id | number;
 func    ::= "(" [id {"," id}] ")" ":" expr;
-funcall ::= id "(" [expr {"," expr}] ")";
+funcall ::= (id | funcall) "(" [expr {"," expr}] ")";
 id      ::= re"~([0-9]|=|\(|\)|,|:)(=|\(|\)|,|:)*";
 number  ::= re"0|([1-9][0-9]*)";
 ```
