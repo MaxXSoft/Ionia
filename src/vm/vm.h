@@ -17,6 +17,8 @@ class VM {
   using ValueStack = std::stack<Value>;
   // definition of external function
   using ExtFunc = std::function<bool(ValueStack &, Value &)>;
+  // definition of symbol error handler
+  using SymErrorHandler = std::function<bool(Value &)>;
 
   VM() { Reset(); }
 
@@ -37,6 +39,12 @@ class VM {
   void Reset();
   // run current program
   bool Run();
+
+  // setters
+  // set handler that will be called when a symbol error occurs
+  void set_sym_error_handler(SymErrorHandler handler) {
+    sym_handler_ = handler;
+  }
 
  private:
   // supported operators by Ionia VM
@@ -88,6 +96,8 @@ class VM {
   FuncPCTable pc_table_;
   GlobalFuncTable global_funcs_;
   std::unordered_map<std::uint32_t, ExtFunc> ext_funcs_;
+  // symbol error handler
+  SymErrorHandler sym_handler_;
 };
 
 }  // namespace ionia::vm

@@ -79,6 +79,8 @@ bool VM::GetEnvValue(Inst *inst, Value &value) {
       cur_env = cur_env->outer;
     }
   }
+  // try to handle symbol error by calling symbol error handler
+  if (sym_handler_ && sym_handler_(value)) return true;
   // value not found
   auto str = sym_table_[inst->opr].c_str();
   return PrintError("not found", str);
