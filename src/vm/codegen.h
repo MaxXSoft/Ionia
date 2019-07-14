@@ -62,8 +62,8 @@ class CodeGen {
  private:
   // file header of Ionia VM's bytecode file (bad bite c -> bad byte code)
   static const std::uint32_t kFileHeader = 0xec17dbba;
-  // minimum bytecode file size
-  static const std::uint32_t kMinFileSize = 4 * 4;
+  // minimum bytecode file size (magic, version, ST len, FPT len, GFT len)
+  static const std::uint32_t kMinFileSize = 5 * 4;
   // size of global function table item
   static const std::uint32_t kGFTItemSize = 4 + 4 + 1;
 

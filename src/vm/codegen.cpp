@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cassert>
 
+#include "version.h"
 #include "util/cast.h"
 
 using namespace ionia::vm;
@@ -21,7 +22,6 @@ const std::uint32_t CodeGen::kFileHeader;
 const std::uint32_t CodeGen::kMinFileSize;
 const std::uint32_t CodeGen::kGFTItemSize;
 
-// TODO: add version info
 int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
                            SymbolTable &sym_table, FuncPCTable &pc_table,
                            GlobalFuncTable &global_funcs) {
@@ -31,6 +31,12 @@ int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
   // check file header
   auto magic_num = IntPtrCast<32>(buffer.data() + pos);
   if (*magic_num != kFileHeader) return -1;
+  pos += 4;
+  // check version info
+  auto ver_info = IntPtrCast<32>(buffer.data() + pos);
+  int major = (*ver_info >> 20) & 0xfff, minor = (*ver_info >> 12) & 0xff,
+      patch = *ver_info & 0xfff;
+  if (CompareVersion(major, minor, patch) > 0) return -1;
   pos += 4;
   // read symbol table length
   auto sym_len = IntPtrCast<32>(buffer.data() + pos);
@@ -127,12 +133,16 @@ std::uint32_t CodeGen::GetFuncId(const std::string &label) {
   }
 }
 
-// TODO: add version info
 std::vector<std::uint8_t> CodeGen::GenerateBytecode() {
   std::ostringstream content;
   assert(unfilled_.empty());
   // generate file header
   content.write(PtrCast<char>(&kFileHeader), sizeof(kFileHeader));
+  // generate version info
+  std::uint32_t ver_info = ((APP_VERSION_MAJOR & 0xfff) << 20) |
+                           ((APP_VERSION_MINOR & 0xff) << 12) |
+                           (APP_VERSION_PATCH & 0xfff);
+  content.write(PtrCast<char>(&ver_info), sizeof(ver_info));
   // generate symbol table
   std::uint32_t sym_len = 0;
   auto len_pos = content.tellp();
