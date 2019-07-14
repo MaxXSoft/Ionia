@@ -80,10 +80,10 @@ bool VM::GetEnvValue(Inst *inst, Value &value) {
     }
   }
   // try to handle symbol error by calling symbol error handler
-  if (sym_handler_ && sym_handler_(value)) return true;
+  auto str = sym_table_[inst->opr];
+  if (sym_error_handler_ && sym_error_handler_(str, value)) return true;
   // value not found
-  auto str = sym_table_[inst->opr].c_str();
-  return PrintError("not found", str);
+  return PrintError("not found", str.c_str());
 }
 
 bool VM::DoCall(const Value &func) {
