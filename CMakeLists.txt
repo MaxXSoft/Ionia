@@ -38,10 +38,16 @@ include_directories(${Readline_INCLUDE_DIR})
 # all of C++ source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-# source files exclude main driver
-set(BASIC_SRC ${SOURCES})
-list(REMOVE_ITEM BASIC_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
+# source files required by the library
+set(LIB_SRC ${SOURCES})
+list(REMOVE_ITEM LIB_SRC "${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp")
+list(REMOVE_ITEM LIB_SRC "${CMAKE_CURRENT_SOURCE_DIR}/util/argparse.cpp")
+list(REMOVE_ITEM LIB_SRC "${CMAKE_CURRENT_SOURCE_DIR}/back/interpreter/repl.cpp")
 
 # executable
-add_executable(ionia ${SOURCES})
-target_link_libraries(ionia ${Readline_LIBRARY})
+add_executable(ionia-bin ${SOURCES})
+target_link_libraries(ionia-bin ${Readline_LIBRARY})
+set_target_properties(ionia-bin PROPERTIES OUTPUT_NAME ionia)
+
+# library
+add_library(ionia ${LIB_SRC})
