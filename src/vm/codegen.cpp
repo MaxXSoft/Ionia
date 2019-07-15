@@ -298,7 +298,8 @@ void CodeGen::SmartGet(const std::string &name) {
 }
 
 void CodeGen::RegisterGlobalFunction(const std::string &name,
-                                       std::uint8_t arg_count) {
+                                     const std::string &label,
+                                     std::uint8_t arg_count) {
   // get function id
   assert(!name.empty() && name[0] == '$');
   auto func_id = GetSymbolIndex(name);
@@ -306,7 +307,7 @@ void CodeGen::RegisterGlobalFunction(const std::string &name,
   // initialize global func structure
   GlobalFunc func;
   // get function pc id
-  func.pc_id = GetFuncId(name);
+  func.pc_id = GetFuncId(label);
   // get argument count
   func.arg_count = arg_count;
   // insert into table

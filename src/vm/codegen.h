@@ -57,6 +57,7 @@ class CodeGen {
   void SmartGet(const std::string &name);
   // register new global function
   void RegisterGlobalFunction(const std::string &name,
+                              const std::string &label,
                               std::uint8_t arg_count);
 
  private:

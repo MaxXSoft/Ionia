@@ -22,7 +22,7 @@ void Compiler::GenerateAllFuncDefs() {
     gen_.GenReturn();
     // check if is global function
     if (func.name[0] == '$') {
-      gen_.RegisterGlobalFunction(func.name, func.args.size());
+      gen_.RegisterGlobalFunction(func.name, func.label, func.args.size());
     }
     func_defs_.pop_front();
   }
