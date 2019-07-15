@@ -34,6 +34,9 @@ class VM {
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
                     const std::vector<Value> &args, Value &ret);
+  // call a function by value
+  bool CallFunction(const Value &func, const std::vector<Value> &args,
+                    Value &ret);
 
   // reset VM's status (except symbol table, FPT, GFT and EFT)
   void Reset();

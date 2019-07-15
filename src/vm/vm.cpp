@@ -300,22 +300,31 @@ bool VM::CallFunction(const std::string &name,
   auto it = global_funcs_.find("$" + name);
   if (it == global_funcs_.end()) return false;
   const auto &func = it->second;
-  // set up new environment
-  auto env = MakeEnv(root_);
-  // set up arguments
+  // check argument count
   if (args.size() != func.arg_count) return false;
+  // call function
+  Value val = {static_cast<std::int32_t>(func.pc_id), MakeEnv(root_)};
+  return CallFunction(val, args, ret);
+}
+
+bool VM::CallFunction(const Value &func, const std::vector<Value> &args,
+                      Value &ret) {
+  if (!func.env) return false;
+  // set up arguments
   for (const auto &i : args) vals_.push(i);
-  // backup environment stack and reset
+  // backup pc, environment stack and reset
   // since VM will automatically stop when executing RET instruction
   // and there is only one environment in environment stack
+  auto last_pc = pc_;
   auto last_envs = envs_;
   while (!envs_.empty()) envs_.pop();
   // call function
-  envs_.push(env);
-  pc_ = pc_table_[func.pc_id];
+  envs_.push(func.env);
+  pc_ = pc_table_[func.value];
   auto result = Run();
   if (result) ret = val_reg_;
-  // restore stack
+  // restore last status
+  pc_ = last_pc;
   envs_ = last_envs;
   return result;
 }
