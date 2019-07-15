@@ -3,7 +3,6 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <algorithm>
 #include <utility>
 #include <cassert>
 
@@ -12,13 +11,6 @@
 
 using namespace ionia::vm;
 using namespace ionia::util;
-
-namespace {
-
-// type of slot in VM environment
-using SlotType = decltype(Env::slot);
-
-}  // namespace
 
 bool VM::PrintError(const char *message) {
   std::cerr << "[ERROR] " << message << ", pc = ";
@@ -164,15 +156,15 @@ bool VM::IonInput(ValueStack &vals, Value &ret) {
 
 bool VM::IonIf(ValueStack &vals, Value &ret) {
   if (vals.size() < 3) return false;
-  // fetch false part
-  auto else_then = vals.top();
+  // fetch condition
+  if (vals.top().env) return false;
+  auto cond = vals.top().value != 0;
   vals.pop();
   // fetch true part
   auto then = vals.top();
   vals.pop();
-  // fetch condition
-  if (vals.top().env) return false;
-  auto cond = vals.top().value != 0;
+  // fetch false part
+  auto else_then = vals.top();
   vals.pop();
   // tail call corresponding part
   auto result = DoTailCall(cond ? then : else_then);
@@ -187,9 +179,9 @@ bool VM::IonIf(ValueStack &vals, Value &ret) {
 bool VM::IonIs(ValueStack &vals, Value &ret) {
   if (vals.size() < 2) return false;
   // fetch arguments
-  auto rhs = vals.top();
-  vals.pop();
   auto lhs = vals.top();
+  vals.pop();
+  auto rhs = vals.top();
   vals.pop();
   // check if lhs and rhs are same
   if ((lhs.env && rhs.env) || (!lhs.env && !rhs.env)) {
@@ -213,7 +205,6 @@ bool VM::IonCalcOp(ValueStack &vals, Value &ret, Operator op) {
     if (vals.top().env) return false;
     rhs = vals.top().value;
     vals.pop();
-    std::swap(lhs, rhs);
   }
   // calculate
   switch (op) {
@@ -349,8 +340,6 @@ bool VM::Run() {
   } while (0)
 
   Inst *inst;
-  Value opr;
-  SlotType slot;
   const void *inst_labels[] = { VM_INST_ALL(VM_EXPAND_LABEL_LIST) };
   // fetch first instruction
   VM_NEXT(0);

@@ -12,9 +12,9 @@ void Compiler::GenerateAllFuncDefs() {
     // generate label
     gen_.LABEL(func.label);
     // generate prologue
-    for (auto it = func.args.rbegin(); it != func.args.rend(); ++it) {
+    for (const auto &i : func.args) {
       gen_.POP();
-      gen_.SET(*it);
+      gen_.SET(i);
     }
     // generate body
     func.expr->Compile(*this);
@@ -88,8 +88,8 @@ void Compiler::CompileFunc(const IdList &args, const ASTPtr &expr) {
 void Compiler::CompileFunCall(const ASTPtr &callee,
                               const ASTPtrList &args) {
   // push all arguments
-  for (const auto &i : args) {
-    i->Compile(*this);
+  for (auto it = args.rbegin(); it != args.rend(); ++it) {
+    (*it)->Compile(*this);
     gen_.PUSH();
   }
   // call function id
