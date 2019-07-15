@@ -77,6 +77,7 @@ bool ArgParser::Parse(int argc, const char *argv[]) {
     }
     else {
       // parse an argument
+      if (arg_ofs >= args_.size()) return false;
       if (!ReadArgValue(argv[i], vals_[args_[arg_ofs].name])) return false;
       ++arg_ofs;
     }
