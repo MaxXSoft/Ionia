@@ -31,6 +31,8 @@ class VM {
   // if success, return function value
   bool RegisterFunction(const std::string &name, ExtFunc func,
                         Value &ret);
+  // register an anonymous function
+  void RegisterAnonFunc(ExtFunc func, Value &ret);
   // call a global function in vitrual machine
   bool CallFunction(const std::string &name,
                     const std::vector<Value> &args, Value &ret);

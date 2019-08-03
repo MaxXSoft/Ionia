@@ -285,6 +285,15 @@ bool VM::RegisterFunction(const std::string &name, ExtFunc func,
   return false;
 }
 
+void VM::RegisterAnonFunc(ExtFunc func, Value &ret) {
+  // get new function pc id
+  auto pc_id = pc_table_.size() + ext_funcs_.size();
+  // add func to external function table
+  ext_funcs_.insert({pc_id, func});
+  // make new value and return
+  ret = MakeValue(pc_id, ext_);
+}
+
 bool VM::CallFunction(const std::string &name,
                       const std::vector<Value> &args, Value &ret) {
   // find function name in global function table
