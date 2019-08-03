@@ -54,6 +54,7 @@ void Disassembler::PrintGlobalFuncs(std::ostream &os) {
     os << "  " << it.first << ", arg.count = ";
     os << static_cast<int>(func.arg_count) << std::endl;
   }
+  os << std::endl;
 }
 
 void Disassembler::PrintLabel(std::ostream &os) {
