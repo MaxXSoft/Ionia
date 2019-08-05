@@ -4,6 +4,7 @@
 #include <utility>
 #include <functional>
 #include <cassert>
+#include <cstddef>
 
 #include "define/ast.h"
 
@@ -84,7 +85,7 @@ ValPtr Interpreter::CallFunc(const ValPtr &func, const ValPtrList &args) {
   }
   // create new nested environment
   auto args_env = std::make_shared<Environment>(func->env());
-  for (int i = 0; i < args.size(); ++i) {
+  for (std::size_t i = 0; i < args.size(); ++i) {
     args_env->AddSymbol(func_ptr->args()[i], args[i]);
   }
   // call function

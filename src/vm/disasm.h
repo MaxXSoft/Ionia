@@ -5,6 +5,7 @@
 #include <ostream>
 #include <vector>
 #include <cstdint>
+#include <cstddef>
 
 #include "vm/define.h"
 
@@ -28,7 +29,7 @@ class Disassembler {
   // print function label
   void PrintLabel(std::ostream &os);
   // get label name via FPT index
-  std::string GetLabelName(int index);
+  std::string GetLabelName(std::size_t index);
 
   std::vector<std::uint8_t> rom_;
   unsigned int error_num_, pc_;

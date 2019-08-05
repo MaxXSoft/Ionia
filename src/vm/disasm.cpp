@@ -59,14 +59,14 @@ void Disassembler::PrintGlobalFuncs(std::ostream &os) {
 
 void Disassembler::PrintLabel(std::ostream &os) {
   // check if there is a function at current pc
-  for (int i = 0; i < pc_table_.size(); ++i) {
+  for (std::size_t i = 0; i < pc_table_.size(); ++i) {
     if (pc_table_[i] == pc_) {
       os << std::endl << GetLabelName(i) << ":" << std::endl;
     }
   }
 }
 
-std::string Disassembler::GetLabelName(int index) {
+std::string Disassembler::GetLabelName(std::size_t index) {
   for (const auto &it : global_funcs_) {
     if (it.second.pc_id == index) return it.first;
   }
@@ -90,7 +90,7 @@ bool Disassembler::LoadBytecode(const std::string &file) {
   if (pos < 0) return false;
   // copy bytecode segment
   rom_.reserve(buffer.size() - pos);
-  for (int i = pos; i < buffer.size(); ++i) {
+  for (std::size_t i = pos; i < buffer.size(); ++i) {
     rom_.push_back(buffer[i]);
   }
   // reset error counter & pc
@@ -151,7 +151,7 @@ bool Disassembler::Disassemble(std::ostream &os) {
         PrintInstOpName(os, inst->opcode);
         // print function mark
         if (inst->opcode == OpCode::FUN && last_const_ != -1) {
-          if (last_const_ >= pc_table_.size()) {
+          if (static_cast<std::size_t>(last_const_) >= pc_table_.size()) {
             os << "(INVALID)";
             ++error_num_;
           }

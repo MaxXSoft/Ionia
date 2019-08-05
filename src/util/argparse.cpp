@@ -55,7 +55,7 @@ bool ArgParser::ReadArgValue(const char *arg, std::any &value) {
 bool ArgParser::Parse(int argc, const char *argv[]) {
   // update program name
   set_program_name(argv[0]);
-  int arg_ofs = 0;
+  std::size_t arg_ofs = 0;
   // parse argument list
   for (int i = 1; i < argc; ++i) {
     if (argv[i][0] == '-') {

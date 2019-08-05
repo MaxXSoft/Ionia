@@ -93,7 +93,7 @@ int CodeGen::ParseBytecode(const std::vector<std::uint8_t> &buffer,
 // TODO: optimize
 std::uint32_t CodeGen::GetSymbolIndex(const std::string &name) {
   // search name in symbol table
-  for (int i = 0; i < sym_table_.size(); ++i) {
+  for (std::size_t i = 0; i < sym_table_.size(); ++i) {
     if (sym_table_[i] == name) return i;
   }
   // symbol not found, create new

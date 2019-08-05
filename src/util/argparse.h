@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <any>
+#include <cstddef>
 
 namespace ionia::util {
 
@@ -90,7 +91,7 @@ class ArgParser {
   bool ReadArgValue(const char *arg, std::any &value);
 
   std::string program_name_;
-  int padding_;
+  std::size_t padding_;
   std::vector<ArgInfo> args_, opts_;
   std::map<std::string, std::size_t> opt_map_;
   std::map<std::string, std::any> vals_;

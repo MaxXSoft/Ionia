@@ -5,6 +5,7 @@
 #include <fstream>
 #include <utility>
 #include <cassert>
+#include <cstddef>
 
 #include "vm/codegen.h"
 #include "util/cast.h"
@@ -97,7 +98,7 @@ bool VM::DoCall(const Value &func) {
     // set up environment
     envs_.push(MakeEnv(func.env));
     envs_.top()->ret_pc = pc_ + 1;
-    if (func.value >= pc_table_.size()) {
+    if (static_cast<std::size_t>(func.value) >= pc_table_.size()) {
       return PrintError("invalid function pc");
     }
     pc_ = pc_table_[func.value];
@@ -124,7 +125,7 @@ bool VM::DoTailCall(const Value &func) {
     auto env = MakeEnv(func.env);
     env->ret_pc = envs_.top()->ret_pc;
     envs_.top() = std::move(env);
-    if (func.value >= pc_table_.size()) {
+    if (static_cast<std::size_t>(func.value) >= pc_table_.size()) {
       return PrintError("invalid function pc");
     }
     pc_ = pc_table_[func.value];
@@ -255,7 +256,7 @@ bool VM::LoadProgram(const std::vector<std::uint8_t> &buffer) {
   if (pos < 0) return false;
   // copy bytecode segment
   rom_.reserve(buffer.size() - pos);
-  for (int i = pos; i < buffer.size(); ++i) {
+  for (std::size_t i = pos; i < buffer.size(); ++i) {
     rom_.push_back(buffer[i]);
   }
   // set up external functions (Ionia standard functions)
