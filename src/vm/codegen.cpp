@@ -11,12 +11,6 @@
 using namespace ionia::vm;
 using namespace ionia::util;
 
-namespace {
-
-using InstOp = Inst::OpCode;
-
-}  // namespace
-
 // definitions of static member variables
 const std::uint32_t CodeGen::kFileHeader;
 const std::uint32_t CodeGen::kMinFileSize;
@@ -101,16 +95,17 @@ std::uint32_t CodeGen::GetSymbolIndex(const std::string &name) {
   return sym_table_.size() - 1;
 }
 
-void CodeGen::PushInst(const Inst &inst) {
+void CodeGen::PushInst(OpCode op, std::uint32_t opr) {
+  Inst inst = {static_cast<std::uint32_t>(op), opr};
   auto ptr = IntPtrCast<8>(&inst);
   inst_buf_.push_back(ptr[0]);
   inst_buf_.push_back(ptr[1]);
   inst_buf_.push_back(ptr[2]);
   inst_buf_.push_back(ptr[3]);
-  last_op_ = inst.opcode;
+  last_op_ = static_cast<OpCode>(inst.opcode);
 }
 
-void CodeGen::PushInst(Inst::OpCode op) {
+void CodeGen::PushInst(OpCode op) {
   inst_buf_.push_back(*IntPtrCast<8>(&op));
   last_op_ = op;
 }
@@ -196,47 +191,47 @@ void CodeGen::Reset() {
   inst_buf_.clear();
   labels_.clear();
   unfilled_.clear();
-  last_op_ = static_cast<InstOp>(0);
+  last_op_ = static_cast<OpCode>(0);
 }
 
 void CodeGen::GET(const std::string &name) {
-  PushInst({InstOp::GET, GetSymbolIndex(name)});
+  PushInst(OpCode::GET, GetSymbolIndex(name));
 }
 
 void CodeGen::SET(const std::string &name) {
-  PushInst({InstOp::SET, GetSymbolIndex(name)});
+  PushInst(OpCode::SET, GetSymbolIndex(name));
 }
 
 void CodeGen::FUN() {
-  PushInst(InstOp::FUN);
+  PushInst(OpCode::FUN);
 }
 
 void CodeGen::CNST(std::uint32_t num) {
-  PushInst({InstOp::CNST, num});
+  PushInst(OpCode::CNST, num);
 }
 
 void CodeGen::CNSH(std::uint32_t num) {
-  PushInst({InstOp::CNSH, num});
+  PushInst(OpCode::CNSH, num);
 }
 
 void CodeGen::PUSH() {
-  PushInst(InstOp::PUSH);
+  PushInst(OpCode::PUSH);
 }
 
 void CodeGen::POP() {
-  PushInst(InstOp::POP);
+  PushInst(OpCode::POP);
 }
 
 void CodeGen::RET() {
-  PushInst(InstOp::RET);
+  PushInst(OpCode::RET);
 }
 
 void CodeGen::CALL() {
-  PushInst(InstOp::CALL);
+  PushInst(OpCode::CALL);
 }
 
 void CodeGen::TCAL() {
-  PushInst(InstOp::TCAL);
+  PushInst(OpCode::TCAL);
 }
 
 void CodeGen::LABEL(const std::string &label) {
@@ -275,10 +270,11 @@ void CodeGen::SetConst(std::int32_t num) {
 }
 
 void CodeGen::GenReturn() {
-  if (last_op_ == InstOp::CALL) {
+  if (last_op_ == OpCode::CALL) {
     // modify opcode to TCAL
     auto inst = PtrCast<Inst>(inst_buf_.data() + inst_buf_.size() - 1);
-    last_op_ = inst->opcode = InstOp::TCAL;
+    last_op_ = OpCode::TCAL;
+    inst->opcode = static_cast<std::uint32_t>(last_op_);
   }
   else {
     // just generate RET
@@ -287,7 +283,7 @@ void CodeGen::GenReturn() {
 }
 
 void CodeGen::SmartGet(const std::string &name) {
-  if (last_op_ == InstOp::SET) {
+  if (last_op_ == OpCode::SET) {
     auto index = GetSymbolIndex(name);
     // check if last instruction has same index
     auto inst = PtrCast<Inst>(inst_buf_.data() + inst_buf_.size() - 4);

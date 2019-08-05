@@ -342,11 +342,11 @@ void VM::Reset() {
 }
 
 bool VM::Run() {
-#define VM_NEXT(len)                                    \
-  do {                                                  \
-    pc_ += len;                                         \
-    inst = PtrCast<Inst>(rom_.data() + pc_);            \
-    goto *inst_labels[static_cast<int>(inst->opcode)];  \
+#define VM_NEXT(len)                          \
+  do {                                        \
+    pc_ += len;                               \
+    inst = PtrCast<Inst>(rom_.data() + pc_);  \
+    goto *inst_labels[inst->opcode];          \
   } while (0)
 
   Inst *inst;

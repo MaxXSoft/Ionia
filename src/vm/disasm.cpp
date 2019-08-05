@@ -11,8 +11,6 @@ using namespace ionia::util;
 
 namespace {
 
-using OpCode = Inst::OpCode;
-
 // splitter of each column
 constexpr const char *kSplit = "    ";
 
@@ -103,17 +101,18 @@ bool Disassembler::Disassemble(std::ostream &os) {
   // print GFT
   PrintGlobalFuncs(os);
   // print instructions
-  using OpCode = Inst::OpCode;
   while (pc_ < rom_.size()) {
     // fetch next instruction
     auto inst = PtrCast<Inst>(rom_.data() + pc_);
     PrintLabel(os);
     // print current pc
     PrintPC(os, pc_, true);
-    switch (inst->opcode) {
+    // print instruction
+    auto opcode = static_cast<OpCode>(inst->opcode);
+    switch (opcode) {
       case OpCode::GET: case OpCode::SET: {
         PrintRawBytecode(os, inst, false);
-        PrintInstOpName(os, inst->opcode);
+        PrintInstOpName(os, opcode);
         if (inst->opr >= sym_table_.size()) {
           // invalid symbol id
           os << "INVALID";
@@ -128,10 +127,10 @@ bool Disassembler::Disassemble(std::ostream &os) {
       }
       case OpCode::CNST: case OpCode::CNSH: {
         PrintRawBytecode(os, inst, false);
-        PrintInstOpName(os, inst->opcode);
+        PrintInstOpName(os, opcode);
         os << std::dec << inst->opr;
         // record last constant
-        if (inst->opcode == OpCode::CNST) {
+        if (opcode == OpCode::CNST) {
           last_const_ = inst->opr;
           if (inst->opr & (1 << (VM_INST_OPR_WIDTH - 1))) {
             last_const_ |= ~VM_INST_IMM_MASK;
@@ -148,9 +147,9 @@ bool Disassembler::Disassemble(std::ostream &os) {
       case OpCode::PUSH: case OpCode::POP:
       case OpCode::CALL: case OpCode::TCAL: {
         PrintRawBytecode(os, inst, true);
-        PrintInstOpName(os, inst->opcode);
+        PrintInstOpName(os, opcode);
         // print function mark
-        if (inst->opcode == OpCode::FUN && last_const_ != -1) {
+        if (opcode == OpCode::FUN && last_const_ != -1) {
           if (static_cast<std::size_t>(last_const_) >= pc_table_.size()) {
             os << "(INVALID)";
             ++error_num_;

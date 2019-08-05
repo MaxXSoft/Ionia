@@ -30,11 +30,15 @@
 
 namespace ionia::vm {
 
+// enumeration of opcode
+enum class OpCode : std::uint32_t {
+  VM_INST_ALL(VM_EXPAND_LIST)
+};
+
+// structure of instruction
 struct Inst {
   // opcode
-  enum class OpCode : std::uint32_t {
-    VM_INST_ALL(VM_EXPAND_LIST)
-  } opcode : VM_INST_OPCODE_WIDTH;
+  std::uint32_t opcode : VM_INST_OPCODE_WIDTH;
   // operand
   std::uint32_t opr : VM_INST_OPR_WIDTH;
 };

@@ -69,8 +69,8 @@ class CodeGen {
   static const std::uint32_t kGFTItemSize = 4 + 4 + 1;
 
   std::uint32_t GetSymbolIndex(const std::string &name);
-  void PushInst(const Inst &inst);
-  void PushInst(Inst::OpCode op);
+  void PushInst(OpCode op, std::uint32_t opr);
+  void PushInst(OpCode op);
   std::uint32_t GetFuncId(const std::string &label);
 
   // tables
@@ -79,7 +79,7 @@ class CodeGen {
   std::map<std::uint32_t, GlobalFunc> global_funcs_;
   // buffer that stores instructions
   std::vector<std::uint8_t> inst_buf_;
-  Inst::OpCode last_op_;
+  OpCode last_op_;
   // map of labels
   std::map<std::string, std::uint32_t> labels_, unfilled_;
 };
