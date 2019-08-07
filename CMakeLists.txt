@@ -6,8 +6,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # # set compiler path
-# set(CMAKE_C_COMPILER "/usr/local/opt/gcc/bin/gcc-8")
-# set(CMAKE_CXX_COMPILER "/usr/local/opt/gcc/bin/g++-8")
+# set(CMAKE_C_COMPILER "/usr/local/opt/gcc/bin/gcc-9")
+# set(CMAKE_CXX_COMPILER "/usr/local/opt/gcc/bin/g++-9")
 
 # C++17 standard support
 set(CMAKE_CXX_STANDARD 17)
