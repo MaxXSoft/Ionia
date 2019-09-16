@@ -385,6 +385,7 @@ bool VM::Run() {
 
   // set constant number as higher part of value register
   VM_LABEL(CNSH) {
+    val_reg_.value &= VM_INST_IMM_MASK;
     val_reg_.value |= inst->opr << VM_INST_OPCODE_WIDTH;
     val_reg_.env = nullptr;
     VM_NEXT(4);

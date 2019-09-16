@@ -264,7 +264,10 @@ void CodeGen::DefineFunction(const std::string &name) {
 void CodeGen::SetConst(std::int32_t num) {
   CNST(num & VM_INST_IMM_MASK);
   auto hi = num & ~VM_INST_IMM_MASK;
-  if (hi && hi != ~VM_INST_IMM_MASK) {
+  // check if needs to set high part of constant
+  auto is_hi_zero = !hi && !(num & (1 << (VM_INST_OPR_WIDTH - 1)));
+  auto is_hi_neg = hi == ~VM_INST_IMM_MASK;
+  if (!is_hi_zero && !is_hi_neg) {
     CNSH((num & ~VM_INST_IMM_MASK) >> VM_INST_OPCODE_WIDTH);
   }
 }
